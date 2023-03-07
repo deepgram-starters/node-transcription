@@ -1,0 +1,11 @@
+{
+  "name": "Project title goes here",
+  "description": "Description of this app",
+  "keywords": [
+    "framework",
+    "language",
+    "template"
+  ],
+  "website": "https://deepgram.com",
+  "repository": "https://github.com/deepgram-starters/project-template"
+}

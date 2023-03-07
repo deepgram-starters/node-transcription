@@ -1,0 +1,9 @@
+[build]
+  command = "npm install"
+
+[config]
+  sample = ".env-sample"
+  output = ".env"
+
+[post-build]
+  message = "Run `npm start` to get up and running."
