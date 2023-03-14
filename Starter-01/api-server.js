@@ -14,10 +14,14 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(cors({ origin: appOrigin }));
 
-app.get("/api",  (req, res) => {
-  res.send({
-    msg: "test!",
-  });
+app.get("/api", (req, res) => {
+  var delayInMilliseconds = 1000; //1 second
+
+  setTimeout(function () {
+    res.send({
+      msg: "test!",
+    });
+  }, delayInMilliseconds);
 });
 
 app.listen(port, () => console.log(`API Server listening on port ${port}`));
