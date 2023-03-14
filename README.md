@@ -1,10 +1,8 @@
-# Deepgram [Language] Starters
+# Deepgram Node.js Starters
 
-Please check out the starters contained in this repository, for examples of how to build Deepgram into your [Language] applications.
+Please check out the starters contained in this repository, for examples of how to build Deepgram into your Node.js applications.
 
-- [Web App](./Starter-01/README.md)
-- [Websockets](./Starter-01/README.md)
-- [Command-line](./Starter-01/README.md)
+- [Basic starter app](./Starter-01/README.md)
 
 ## What is Deepgram?
 
