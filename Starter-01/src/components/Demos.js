@@ -1,8 +1,11 @@
 import { Fragment, useState, createRef } from "react";
 // import { getConfig } from "../config";
 import { PlayIcon } from "@heroicons/react/24/outline";
-
-import fileIcon from "../assets/file.svg";
+import {
+  ExclamationCircleIcon,
+  CloudArrowUpIcon,
+  DocumentTextIcon,
+} from "@heroicons/react/20/solid";
 
 const files = [
   {
@@ -81,33 +84,40 @@ const featureMap = {
     "utterances",
     "summarize",
     "detect_topics",
-    "detect_language",
   ],
   live: ["punctuate", "redact", "numerals"],
 };
 
 export default function Demos() {
-  const apiOrigin = "http://localhost:3001";
-
-  // const [state, setState] = useState({
-  //   working: false,
-  //   showResult: false,
-  //   result: "",
-  //   error: "",
-  // });
-
   const fileInput = createRef();
+  const audioSelector = createRef();
 
-  const [audio, setAudio] = useState();
+  // result state
+  const [error, setError] = useState();
+  const [utterances, setUtterances] = useState();
+  const [summaries, setSummaries] = useState();
+  const [topics, setTopics] = useState();
+  const [language, setLanguage] = useState();
+  const [transcript, setTranscript] = useState();
+
+  // ui state
+  const [done, setDone] = useState();
+  const [working, setWorking] = useState();
+
+  // request state
   const [features, setFeatures] = useState({});
   const [file, setFile] = useState();
   const [url, setUrl] = useState(files[0].value);
 
+  const apiOrigin = "http://localhost:3001";
+
   const onSubmitHandler = async (e) => {
+    setError();
+    setDone(false);
+    setWorking(true);
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("audio", audio);
     formData.append("features", JSON.stringify(features));
     formData.append("file", file);
     formData.append("url", url);
@@ -117,35 +127,58 @@ export default function Demos() {
         method: "POST",
         body: formData,
       });
-      const responseData = await response.json();
-      console.log(responseData);
-      // setState({
-      //   ...state,
-      //   showResult: true,
-      //   working: false,
-      //   result: responseData,
-      // });
+
+      const { err, transcription } = await response.json();
+
+      if (err) throw Error(err);
+
+      setDone(true);
+      setWorking(false);
+
+      const { results } = transcription;
+
+      const {
+        utterances: resUtterances,
+        channels: [
+          {
+            alternatives: [
+              {
+                summaries: resSummaries,
+                topics: resTopics,
+                detected_language: resLanguage,
+                transcript: resTranscript,
+              },
+            ],
+          },
+        ],
+      } = results;
+
+      console.log(results.channels[0].alternatives[0]);
+
+      setUtterances(resUtterances);
+      setSummaries(resSummaries);
+      setTopics(resTopics);
+      setLanguage(resLanguage);
+      setTranscript(resTranscript);
     } catch (error) {
-      // setState({
-      //   ...state,
-      //   working: false,
-      //   error: error.error,
-      // });
+      setError(error);
+      setWorking(false);
     }
   };
 
-  const inputChangeHandler = (setFunction, e) => {
-    setFunction(e.target.value);
-  };
+  const selectCdnAudio = (e) => {
+    setUrl(e.target.value);
+    setFile(null);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const resetAttachedAudio = () => {
     fileInput.current.value = null;
-    setAudio();
-    setFile();
+    audioSelector.current.checked = false;
+  };
+
+  const selectUploadFile = (e) => {
+    setFile(e.target.files[0]);
+    setUrl(null);
+
+    audioSelector.current.checked = true;
   };
 
   const featureChangeHandler = (feature, e) => {
@@ -166,26 +199,27 @@ export default function Demos() {
             <input
               className="sr-only peer"
               type="radio"
-              value="upload"
               name="audio"
-              id="upload"
-              onChange={(e) => {
-                inputChangeHandler(setAudio, e);
-                setUrl();
-              }}
+              ref={audioSelector}
+              disabled={working}
             />
             <label
-              className="min-h-[8em] flex flex-col p-5 rounded-lg bg-white px-4 py-5 shadow sm:p-6 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-irisLight peer-checked:ring-2 peer-checked:border-transparent"
-              htmlFor="upload"
+              className="peer-disabled:opacity-[50%] min-h-full flex flex-col p-5 rounded-lg bg-white px-4 py-5 shadow-lg sm:p-6 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:bg-iris peer-checked:text-white"
+              htmlFor="file"
             >
-              Use your own audio.
-              <hr className="my-5" />
+              <CloudArrowUpIcon className="w-8 mb-2 self-center" />
+              <p className="text-center lg:text-left">
+                Select an audio or video file to transcribe.
+              </p>
               <input
+                className="sr-only"
+                id="file"
                 ref={fileInput}
                 type="file"
                 name="file"
                 accept="audio/*,video/*"
-                onChange={handleFileChange}
+                disabled={working}
+                onChange={selectUploadFile}
               />
             </label>
           </li>
@@ -195,59 +229,68 @@ export default function Demos() {
               <input
                 className="sr-only peer"
                 type="radio"
-                value={item.value}
                 name="audio"
+                value={item.value}
                 defaultChecked={item.checked}
                 id={item.key}
-                onChange={(e) => {
-                  inputChangeHandler(setUrl, e);
-                  resetAttachedAudio();
-                }}
+                disabled={working}
+                onChange={selectCdnAudio}
               />
               <label
-                className="select-none min-h-[8em] flex p-5 h-full items-start rounded-lg bg-white px-4 py-5 shadow sm:p-6 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-irisLight peer-checked:ring-2 peer-checked:border-transparent"
+                className="peer-disabled:opacity-[50%] min-h-full flex flex-col p-5 rounded-lg bg-white px-4 py-5 shadow-lg sm:p-6 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:bg-iris peer-checked:text-white"
                 htmlFor={item.key}
               >
-                <img src={fileIcon} alt="file" className="fill-iris mr-5 w-6" />
-                {item.name}
+                <DocumentTextIcon className="w-8 mb-2 self-center" />
+                <p className="text-center lg:text-left">{item.name}</p>
               </label>
             </li>
           ))}
         </ul>
-        <div className="pt-5">
-          <div className="flex justify-end gap-x-3">
-            <button
-              type="submit"
-              className="inline-flex justify-center rounded-md bg-meadow py-2 px-3 font-semibold text-ink shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              Run
-              <PlayIcon
-                className="h-[1.2rem] w-[1.2rem] mt-[0.1em] ml-[0.5rem] stroke-2"
+        <div className="mt-5 flex items-center justify-end gap-x-5">
+          {error && (
+            <p className="group inline-flex items-start space-x-2 text-sm text-red-500">
+              <ExclamationCircleIcon
+                className="h-5 w-5 flex-shrink-0 text-red-500"
                 aria-hidden="true"
               />
-            </button>
-          </div>
+              <span>{error.message}</span>
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={working}
+            className="inline-flex justify-center rounded-md bg-meadow py-2 px-3 font-semibold text-ink shadow-lg hover:bg-darkCharcoal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          >
+            Run
+            <PlayIcon
+              className="h-[1.2rem] w-[1.2rem] mt-[0.1em] ml-[0.5rem] stroke-2"
+              aria-hidden="true"
+            />
+          </button>
         </div>
         <div className="pt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 gap-x-4">
-          <div className="rounded-lg bg-white px-4 py-5 shadow">
+          <div className="rounded-lg bg-white px-4 py-5 shadow-lg">
             <fieldset>
-              <legend className="sr-only">Notifications</legend>
+              <legend className="sr-only">Features</legend>
               <div className="space-y-5">
                 {availableFeatures.map((item) => (
                   <div key={item.key} className="relative flex items-start">
                     <div className="flex h-6 items-center">
                       <input
-                        id={item.key}
-                        name={item.key}
-                        disabled={!featureMap.prerecorded.includes(item.key)}
-                        onChange={(e) => {
-                          featureChangeHandler(item.key, e);
-                        }}
                         type="checkbox"
                         className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                        id={item.key}
+                        name={item.key}
+                        disabled={
+                          working || !featureMap.prerecorded.includes(item.key)
+                        }
+                        onChange={(e) => {
+                          featureChangeHandler(item.key, e);
+                          setDone(false);
+                        }}
                       />
                     </div>
-                    <div className="ml-3  leading-6">
+                    <div className="ml-3 leading-6">
                       <label
                         htmlFor={item.key}
                         className="font-medium text-gray-900"
@@ -263,32 +306,57 @@ export default function Demos() {
               </div>
             </fieldset>
           </div>
-          <div className="rounded-lg bg-white px-4 py-5 shadow">
-            {/* {state.showResult && ( */}
-            <Fragment>
-              <p>Your results will appear here.</p>
-              <h3 className="text-xl sm:text-2xl font-semibold">
-                Transcription results
-              </h3>
-              <p>
-                Hi. Welcome to delicious Pizza company. Can I take your order?
-                Yeah. I’d like 2 large cheese Pizzas, please. I’m trying to feed
-                a group of 8 people. I can help you with that.
-              </p>
-              <h3 className="text-xl sm:text-2xl font-semibold mt-3">
-                Summarization
-              </h3>
-              <p>Hi, I'd like to order a pizza.</p>
-              <h3 className="text-xl sm:text-2xl font-semibold mt-3">
-                Topics detected
-              </h3>
-              <p>Pizza, food order, delivery</p>
-              <h3 className="text-xl sm:text-2xl font-semibold mt-3">
-                Languages detected
-              </h3>
-              <p>English</p>
-            </Fragment>
-            {/* )} */}
+          <div className="rounded-lg bg-white px-4 py-5 shadow-lg gap-y-1 flex flex-col">
+            {!done && (
+              <Fragment>
+                <p>Your results will appear here.</p>
+              </Fragment>
+            )}
+            {done && (
+              <Fragment>
+                {summaries && (
+                  <Fragment>
+                    <h4 className="text-xl font-semibold">Summary</h4>
+                    {summaries.map((s, i) => (
+                      <p key={i}>{s.summary}</p>
+                    ))}
+                  </Fragment>
+                )}
+                {topics && (
+                  <Fragment>
+                    <h4 className="text-xl font-semibold">Topics detected</h4>
+                    <ul>
+                      {topics.map((detects, i) =>
+                        detects.topics.map((t, j) => (
+                          <li
+                            className="inline [&:not(:last-child)]:after:content-[','] [&:not(:first-child)]:pl-1"
+                            key={j}
+                          >
+                            {t.topic}
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </Fragment>
+                )}
+                {language && (
+                  <Fragment>
+                    <h4 className="text-xl font-semibold">Detected language</h4>
+                    <p>{JSON.stringify(language)}</p>
+                  </Fragment>
+                )}
+                {utterances && (
+                  <Fragment>
+                    <h4 className="text-xl font-semibold">Utterances</h4>
+                    <p>{JSON.stringify(utterances)}</p>
+                  </Fragment>
+                )}
+                <Fragment>
+                  <h4 className="text-xl font-semibold">Full transcript</h4>
+                  <p>{transcript}</p>
+                </Fragment>
+              </Fragment>
+            )}
           </div>
         </div>
       </form>

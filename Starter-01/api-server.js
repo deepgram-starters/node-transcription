@@ -23,30 +23,37 @@ app.post("/api", upload.single("file"), async (req, res) => {
   let dgRequest = null;
 
   try {
+    // validate the URL for a URL request
     if (url && url.startsWith("https://res.cloudinary.com/deepgram")) {
       dgRequest = { url };
     }
 
+    // get file buffer for a file request
     if (file) {
       const { mimetype, buffer } = file;
       dgRequest = { buffer, mimetype };
     }
 
     if (!dgRequest) {
-      throw Error("Starter: Nothing to transcribe");
+      throw Error(
+        "Error: You need to choose a file to transcribe your own audio."
+      );
     }
 
+    // send request to deepgram
     const transcription = await deepgram.transcription.preRecorded(dgRequest, {
       ...dgFeatures,
       tier: "enhanced",
     });
 
+    // return results
     res.send({ dgRequest, dgFeatures, transcription });
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);
 
-    res.status(500).send(err);
+    // handle error
+    res.status(500).send({ err: err.message ? err.message : err });
   }
 });
 

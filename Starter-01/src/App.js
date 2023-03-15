@@ -8,7 +8,7 @@ import history from "./utils/history";
 const App = () => {
   return (
     <Router history={history}>
-      <main className="flex flex-col h-screen">
+      <main className="flex flex-col h-full min-h-screen bg-slate-50">
         <NavBar />
         <Switch>
           <Route path="/" exact component={Home} />
