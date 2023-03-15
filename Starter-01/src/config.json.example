@@ -1,5 +1,3 @@
 {
-  "domain": "{DOMAIN}",
-  "clientId": "{CLIENT_ID}",
-  "audience": "{API_IDENTIFIER}"
+  "dgKey": "%api_key%"
 }

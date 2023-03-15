@@ -84,6 +84,7 @@ const featureMap = {
     "utterances",
     "summarize",
     "detect_topics",
+    "detect_language",
   ],
   live: ["punctuate", "redact", "numerals"],
 };
@@ -259,11 +260,11 @@ export default function Demos() {
           <button
             type="submit"
             disabled={working}
-            className="inline-flex justify-center rounded-md bg-meadow py-2 px-3 font-semibold text-ink shadow-lg hover:bg-darkCharcoal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="text-xl inline-flex justify-center rounded-md bg-meadow py-2 px-3 font-semibold text-ink shadow-lg hover:bg-darkCharcoal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             Run
             <PlayIcon
-              className="h-[1.2rem] w-[1.2rem] mt-[0.1em] ml-[0.5rem] stroke-2"
+              className="h-[1.2rem] w-[1.2rem] mt-[0.25rem] ml-[0.5rem] stroke-2"
               aria-hidden="true"
             />
           </button>
@@ -306,7 +307,7 @@ export default function Demos() {
               </div>
             </fieldset>
           </div>
-          <div className="rounded-lg bg-white px-4 py-5 shadow-lg gap-y-1 flex flex-col">
+          <div className="rounded-lg bg-white px-4 py-5 shadow-lg gap-y-1 flex flex-col max-h-[50em] overflow-y-scroll">
             {!done && (
               <Fragment>
                 <p>Your results will appear here.</p>
@@ -348,7 +349,13 @@ export default function Demos() {
                 {utterances && (
                   <Fragment>
                     <h4 className="text-xl font-semibold">Utterances</h4>
-                    <p>{JSON.stringify(utterances)}</p>
+                    <ul>
+                      {utterances.map((detects, i) => (
+                        <li key={i} className="mb-2">
+                          {detects.transcript}
+                        </li>
+                      ))}
+                    </ul>
                   </Fragment>
                 )}
                 <Fragment>
