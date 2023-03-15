@@ -1,27 +1,53 @@
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
-const helmet = require("helmet");
+const { Deepgram } = require("@deepgram/sdk");
 const config = require("./src/config.json");
+const cors = require("cors");
+const express = require("express");
+const multer = require("multer");
 
-const app = express();
-
-const port = process.env.API_PORT || 3001;
 const appPort = process.env.SERVER_PORT || 3000;
+const port = process.env.API_PORT || 3001;
 const appOrigin = config.appOrigin || `http://localhost:${appPort}`;
 
-app.use(morgan("dev"));
-app.use(helmet());
+const deepgram = new Deepgram(config.dgKey);
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+const app = express();
 app.use(cors({ origin: appOrigin }));
 
-app.get("/api", (req, res) => {
-  var delayInMilliseconds = 1000; //1 second
+app.post("/api", upload.single("file"), async (req, res) => {
+  const { body, file } = req;
+  const { url, features } = body;
+  const dgFeatures = JSON.parse(features);
 
-  setTimeout(function () {
-    res.send({
-      msg: "test!",
+  let dgRequest = null;
+
+  try {
+    if (url && url.startsWith("https://res.cloudinary.com/deepgram")) {
+      dgRequest = { url };
+    }
+
+    if (file) {
+      const { mimetype, buffer } = file;
+      dgRequest = { buffer, mimetype };
+    }
+
+    if (!dgRequest) {
+      throw Error("Starter: Nothing to transcribe");
+    }
+
+    const transcription = await deepgram.transcription.preRecorded(dgRequest, {
+      ...dgFeatures,
+      tier: "enhanced",
     });
-  }, delayInMilliseconds);
+
+    res.send({ dgRequest, dgFeatures, transcription });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+
+    res.status(500).send(err);
+  }
 });
 
 app.listen(port, () => console.log(`API Server listening on port ${port}`));
