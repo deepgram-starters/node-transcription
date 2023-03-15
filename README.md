@@ -1,8 +1,8 @@
 # Deepgram Node.js Starters
 
-Please check out the starters contained in this repository, for examples of how to build Deepgram into your Node.js applications.
+Please check out the starters contained in this repository, for examples of how to build Deepgram into your Node.js applications. The starters can be found in their own directories.
 
-- [Basic starter app](./Starter-01/README.md)
+- [Deepgram Node.JS Starter](./Starter-01/README.md)
 
 ## What is Deepgram?
 
