@@ -9,18 +9,18 @@ import {
 
 const files = [
   {
-    key: "phone",
-    name: "Phone call: First all female NASA Spacewalk",
-    checked: true,
-    value:
-      "https://res.cloudinary.com/deepgram/video/upload/v1663090406/dg-audio/NASA-EXP61_EVA_n5zazi.m4a",
-  },
-  {
     key: "podcast",
     name: "Podcast: Deep Learning’s Effect on Science",
-    checked: false,
+    checked: true,
     value:
       "https://res.cloudinary.com/deepgram/video/upload/v1663090404/dg-audio/AI_Show_afpqeh.m4a",
+  },
+  {
+    key: "phone",
+    name: "Phone call: First all female NASA Spacewalk",
+    checked: false,
+    value:
+      "https://res.cloudinary.com/deepgram/video/upload/v1663090406/dg-audio/NASA-EXP61_EVA_n5zazi.m4a",
   },
   {
     key: "callcenter",
@@ -260,7 +260,7 @@ export default function Demos() {
           <button
             type="submit"
             disabled={working}
-            className="text-xl inline-flex justify-center rounded-md bg-meadow py-2 px-3 font-semibold text-ink shadow-lg hover:bg-darkCharcoal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="disabled:opacity-[50%] text-xl inline-flex justify-center rounded-md bg-meadow py-2 px-3 font-semibold text-ink shadow-lg hover:bg-darkCharcoal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             Run
             <PlayIcon

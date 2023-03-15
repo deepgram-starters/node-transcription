@@ -1,76 +1,43 @@
-<!--
-Edit Framework and/or Language into the title for e.g. 
-- Deepgram React Web App Starter
-- Deepgram PHP Websockets Starter
-- Deepgram Node Command-line Starter
--->
-
 # Deepgram Node.js Starter
-
-<!-- Write an intro for this project -->
 
 This sample demonstrates interacting with the Deepgram API from Node.js. It uses the Deepgram Node SDK, and has a React companion application to interact with the Node integration.
 
 ## Sign-up to Deepgram
 
-<!-- Please leave this section unchanged, unless providing a UTM. -->
-
 Before you start, it's essential to generate a Deepgram API key to use in this project. [Sign-up now for Deepgram](https://console.deepgram.com/signup).
 
 ## Quickstart
-
-<!-- Delete these sections as appropriate. Please include at least a manual one. -->
 
 ### Manual
 
 Follow these steps to get started with this starter application.
 
-<!-- Edit as appropriate -->
+### Clone the repository
 
-1. [Manual steps]
-2. [To get this]
-3. [App working]
+Go to GitHub and [clone the repository](https://github.com/deepgram-starters/deepgram-javascript-starter).
 
-### Deepgram CLI
+### Install depedencies
 
-<!-- Requires a deepgram.toml file correctly formatted to launch with the Deepgram CLI -->
+Install the project dependencies.
 
-Having installed the [Deepgram CLI](https://github.com/deepgram-devs/deepgram-cli), run [`deepgram generate deepgram-node-starter`] to clone and set up [[deepgram-starters/deepgram-node-starter](https://github.com/deepgram-starters/deepgram-node-starter)] on your machine.
+```bash
+npm install
+```
 
-### Glitch Remix
+### Edit the config file
 
-Click this button to launch this starter application on Glitch.
+Copy `config.json.example` to `config.json` and give it the API key you generate in the [Deepgram console](https://console.deepgram.com/).
 
-<!-- Requires .env file. Please describe steps here to edit the blank .env file after it has been remixed. **Do not prepopulate** the .env file that might be overwritten by any CLI setup scripts. Anything prepopulated should be placed in the sample .env file for the CLI, and the .env file for Glitch. -->
+```json
+{
+  "dgKey": "api_key"
+}
+```
 
-[[![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button-v2.svg?v=1622676640618)](https://glitch.com/edit/#!/import/github/deepgram-starters/deepgram-node-starter)]
+### Run the application
 
-### StackBlitz
+The `dev` script will run a web and API server concurrently. Once running, you can [access the application in your browser](http://localhost:3000/).
 
-Click this button to launch this starter application on StackBlitz.
-
-<!-- Please use a .stackblitzrc file to define a startCommand: https://developer.stackblitz.com/guides/integration/open-from-github#launching-a-script-on-project-load -->
-
-[[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/fork/github/deepgram-starters/deepgram-node-starter)]
-
-### Heroku
-
-Click this button to launch this starter application on Heroku.
-
-<!-- Please use an app.json file to define how Heroku should bootstrap your application: https://devcenter.heroku.com/articles/app-json-schema -->
-
-[[![Open in StackBlitz](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/deepgram-starters/deepgram-node-starter)]
-
-### Netlify
-
-Click this button to launch this starter application on Netlify.
-
-<!-- Please use a netlify.toml file to define how Netlify should bootstrap your application: https://docs.netlify.com/site-deploys/create-deploys/#template-configuration -->
-
-[[![Open in StackBlitz](https://www.netlify.com/img/deploy/button.svg)](https://github.com/deepgram-starters/deepgram-node-starter)]
-
-## Related Content
-
-- [Any Deepgram content or docs]
-- [related to this starter application]
-- [In a nice long list]
+```bash
+npm run dev
+```
