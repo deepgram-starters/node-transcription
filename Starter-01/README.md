@@ -16,17 +16,18 @@ Follow these steps to get started with this starter application.
 
 Go to GitHub and [clone the repository](https://github.com/deepgram-starters/deepgram-javascript-starter).
 
-#### Install depedencies
+#### Install dependencies
 
-Install the project dependencies.
+Install the project dependencies in the `Starter 01` directory.
 
 ```bash
+cd /Starter-01
 npm install
 ```
 
 #### Edit the config file
 
-Copy `config.json.example` to `config.json` and give it the API key you generate in the [Deepgram console](https://console.deepgram.com/).
+Copy the code from `config.json.example` and create a new file called `config.json`. Paste in the code and enter your API key you generated in the [Deepgram console](https://console.deepgram.com/).
 
 ```json
 {
@@ -42,13 +43,13 @@ The `dev` script will run a web and API server concurrently. Once running, you c
 npm run dev
 ```
 
-### Docker
+### Using Docker
 
 Follow these steps to run the application with docker.
 
 #### Edit the config file
 
-Copy `config.json.example` to `config.json` and give it the API key you generate in the [Deepgram console](https://console.deepgram.com/).
+Copy the contents of `config.json.example` and create a new file called `config.json`. Paste in the contents and enter your API key you generated in the [Deepgram console](https://console.deepgram.com/).
 
 ```json
 {
