@@ -1,5 +1,4 @@
 import { Fragment, useState, createRef } from "react";
-// import { getConfig } from "../config";
 import { PlayIcon } from "@heroicons/react/24/outline";
 import {
   ExclamationCircleIcon,
