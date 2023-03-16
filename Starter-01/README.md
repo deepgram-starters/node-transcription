@@ -21,7 +21,7 @@ Go to GitHub and [clone the repository](https://github.com/deepgram-starters/dee
 Install the project dependencies in the `Starter 01` directory.
 
 ```bash
-cd /Starter-01
+cd ./Starter-01
 npm install
 ```
 
