@@ -2,8 +2,8 @@
   command = "npm install"
 
 [config]
-  sample = ".env-sample"
-  output = ".env"
+  sample = "src/config.json.example"
+  output = "src/config.json"
 
 [post-build]
-  message = "Run `npm start` to get up and running."
+  message = "Run `npm run dev` to get up and running."
