@@ -346,6 +346,10 @@ export default function Demos() {
                     <p>{JSON.stringify(language)}</p>
                   </Fragment>
                 )}
+                <Fragment>
+                  <h4 className="text-xl font-semibold">Full transcript</h4>
+                  <p>{transcript}</p>
+                </Fragment>
                 {utterances && (
                   <Fragment>
                     <h4 className="text-xl font-semibold">Utterances</h4>
@@ -358,10 +362,6 @@ export default function Demos() {
                     </ul>
                   </Fragment>
                 )}
-                <Fragment>
-                  <h4 className="text-xl font-semibold">Full transcript</h4>
-                  <p>{transcript}</p>
-                </Fragment>
               </Fragment>
             )}
           </div>
