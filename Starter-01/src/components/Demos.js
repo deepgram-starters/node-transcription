@@ -17,12 +17,12 @@ const models = [
   {
     model: "general",
     name: "Deepgram Enhanced",
-    tier: "enhanced",
+    version: "latest",
   },
   {
     model: "whisper",
     name: "OpenAI Whisper",
-    tier: "medium",
+    version: "large",
   },
 ];
 
@@ -143,7 +143,7 @@ export default function Demos() {
     formData.append("file", file);
     formData.append("url", url);
     formData.append("model", selectedModel.model);
-    formData.append("tier", selectedModel.tier);
+    formData.append("version", selectedModel.version);
 
     try {
       const response = await fetch(`${apiOrigin}/api`, {
@@ -175,8 +175,6 @@ export default function Demos() {
           },
         ],
       } = results;
-
-      console.log(results.channels[0].alternatives[0]);
 
       setUtterances(resUtterances);
       setSummaries(resSummaries);
@@ -269,7 +267,7 @@ export default function Demos() {
             </li>
           ))}
         </ul>
-        <div className="pt-5 flex flex-col md:flex-row justify-end gap-y-3 md:gap-x-3">
+        <div className="pt-5 flex flex-col md:flex-row justify-end items-center gap-y-3 md:gap-x-3">
           {error && (
             <p className="group inline-flex items-start space-x-2 text-sm text-red-500">
               <ExclamationCircleIcon
