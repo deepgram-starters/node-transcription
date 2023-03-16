@@ -46,6 +46,16 @@ npm run dev
 
 Follow these steps to run the application with docker.
 
+#### Edit the config file
+
+Copy `config.json.example` to `config.json` and give it the API key you generate in the [Deepgram console](https://console.deepgram.com/).
+
+```json
+{
+  "dgKey": "api_key"
+}
+```
+
 #### Useful binary files
 
 You can run the binary `exec.sh` for Mac or Linux, and `exec.ps1` for Windows.
