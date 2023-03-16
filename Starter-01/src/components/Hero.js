@@ -1,6 +1,7 @@
 import deepgramLogo from "../assets/deepgram.svg";
 import nodeLogo from "../assets/node.svg";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { SiGithub } from "@icons-pack/react-simple-icons";
 
 <svg
   xmlns="http://www.w3.org/2000/svg"
@@ -41,6 +42,17 @@ export default function Hero() {
             </a>{" "}
             client.
           </p>
+          <div className="mt-5 flex items-center justify-center gap-x-5">
+            <a
+              href="https://github.com/deepgram-starters/deepgram-javascript-starters/tree/main/Starter-01"
+              target="_blank"
+              rel="noreferrer"
+              className="text-xl inline-flex justify-center rounded-md bg-ink py-2 px-3 font-semibold text-white shadow-lg hover:bg-darkCharcoal focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              <SiGithub className="inline h-[1.2rem] w-[1.2rem] mt-[0.25rem] mr-[0.5rem] stroke-2" />{" "}
+              View the code on GitHub
+            </a>
+          </div>
         </div>
       </div>
     </div>

@@ -1,16 +1,8 @@
 import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { NavLink } from "react-router-dom";
+import { SiGithub } from "@icons-pack/react-simple-icons";
 
 import dgLogo from "../assets/deepgram.svg";
-
-const navigation = [
-  // { name: 'Home', href: '/', current: true }
-];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export default function NavBar() {
   return (
@@ -43,23 +35,17 @@ export default function NavBar() {
                     alt="React logo"
                   />
                 </div>
-                <div className="hidden sm:ml-6 sm:block">
-                  <div className="flex space-x-4">
-                    {navigation.map((item) => (
-                      <NavLink
-                        key={item.name}
-                        to={item.href}
-                        className={classNames(
-                          item.current
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                          "rounded-md px-3 py-2 text-sm font-medium"
-                        )}
-                        aria-current={item.current ? "page" : undefined}
-                      >
-                        {item.name}
-                      </NavLink>
-                    ))}
+                <div className="hidden sm:ml-6 sm:block w-full">
+                  <div className="flex justify-end space-x-4">
+                    <a
+                      href="https://github.com/deepgram-starters/deepgram-javascript-starters/tree/main/Starter-01"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                    >
+                      <SiGithub className="inline h-[1.2rem] w-[1.2rem] -mt-[0.25rem] mr-[0.5rem] stroke-2" />{" "}
+                      View the code on GitHub
+                    </a>
                   </div>
                 </div>
               </div>
@@ -68,22 +54,16 @@ export default function NavBar() {
 
           <Disclosure.Panel className="sm:hidden">
             <div className="space-y-1 px-2 pt-2 pb-3">
-              {navigation.map((item) => (
-                <Disclosure.Button
-                  key={item.name}
-                  as="a"
-                  href={item.href}
-                  className={classNames(
-                    item.current
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                    "block rounded-md px-3 py-2 text-base font-medium"
-                  )}
-                  aria-current={item.current ? "page" : undefined}
-                >
-                  {item.name}
-                </Disclosure.Button>
-              ))}
+              <Disclosure.Button
+                as="a"
+                href="https://github.com/deepgram-starters/deepgram-javascript-starters/tree/main/Starter-01"
+                target="_blank"
+                rel="noreferrer"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
+              >
+                <SiGithub className="inline h-[1.2rem] w-[1.2rem] -mt-[0.25rem] mr-[0.5rem] stroke-2" />{" "}
+                View the code on GitHub
+              </Disclosure.Button>
             </div>
           </Disclosure.Panel>
         </>
