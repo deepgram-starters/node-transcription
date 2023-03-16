@@ -8,7 +8,7 @@ const appPort = process.env.SERVER_PORT || 3000;
 const port = process.env.API_PORT || 3001;
 const appOrigin = config.appOrigin || `http://localhost:${appPort}`;
 
-const deepgram = new Deepgram(config.dgKey);
+const deepgram = new Deepgram(config.dgKey, "api.beta.deepgram.com");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -17,7 +17,7 @@ app.use(cors({ origin: appOrigin }));
 
 app.post("/api", upload.single("file"), async (req, res) => {
   const { body, file } = req;
-  const { url, features } = body;
+  const { url, features, model, tier } = body;
   const dgFeatures = JSON.parse(features);
 
   let dgRequest = null;
@@ -43,11 +43,12 @@ app.post("/api", upload.single("file"), async (req, res) => {
     // send request to deepgram
     const transcription = await deepgram.transcription.preRecorded(dgRequest, {
       ...dgFeatures,
-      tier: "enhanced",
+      tier,
+      model,
     });
 
     // return results
-    res.send({ dgRequest, dgFeatures, transcription });
+    res.send({ tier, model, dgRequest, dgFeatures, transcription });
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);

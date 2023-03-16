@@ -4,7 +4,27 @@ import {
   ExclamationCircleIcon,
   CloudArrowUpIcon,
   DocumentTextIcon,
+  CheckIcon,
+  ChevronUpDownIcon,
 } from "@heroicons/react/20/solid";
+import { Listbox, Transition } from "@headlessui/react";
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
+
+const models = [
+  {
+    model: "general",
+    name: "Deepgram Enhanced",
+    tier: "enhanced",
+  },
+  {
+    model: "whisper",
+    name: "OpenAI Whisper",
+    tier: "medium",
+  },
+];
 
 const files = [
   {
@@ -103,6 +123,7 @@ export default function Demos() {
   // ui state
   const [done, setDone] = useState();
   const [working, setWorking] = useState();
+  const [selectedModel, setSelectedModel] = useState(models[0]);
 
   // request state
   const [features, setFeatures] = useState({});
@@ -121,6 +142,8 @@ export default function Demos() {
     formData.append("features", JSON.stringify(features));
     formData.append("file", file);
     formData.append("url", url);
+    formData.append("model", selectedModel.model);
+    formData.append("tier", selectedModel.tier);
 
     try {
       const response = await fetch(`${apiOrigin}/api`, {
@@ -204,7 +227,7 @@ export default function Demos() {
               disabled={working}
             />
             <label
-              className="peer-disabled:opacity-[50%] min-h-full flex flex-col p-5 rounded-lg bg-white px-4 py-5 shadow-lg sm:p-6 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:bg-iris peer-checked:text-white"
+              className="peer-disabled:opacity-50 min-h-full flex flex-col p-5 rounded-lg bg-white px-4 py-5 shadow-lg sm:p-6 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:bg-iris peer-checked:text-white"
               htmlFor="file"
             >
               <CloudArrowUpIcon className="w-8 mb-2 self-center" />
@@ -237,7 +260,7 @@ export default function Demos() {
                 onChange={selectCdnAudio}
               />
               <label
-                className="peer-disabled:opacity-[50%] min-h-full flex flex-col p-5 rounded-lg bg-white px-4 py-5 shadow-lg sm:p-6 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:bg-iris peer-checked:text-white"
+                className="peer-disabled:opacity-50 min-h-full flex flex-col p-5 rounded-lg bg-white px-4 py-5 shadow-lg sm:p-6 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:bg-iris peer-checked:text-white"
                 htmlFor={item.key}
               >
                 <DocumentTextIcon className="w-8 mb-2 self-center" />
@@ -246,7 +269,7 @@ export default function Demos() {
             </li>
           ))}
         </ul>
-        <div className="mt-5 flex items-center justify-end gap-x-5">
+        <div className="pt-5 flex flex-col md:flex-row justify-end gap-y-3 md:gap-x-3">
           {error && (
             <p className="group inline-flex items-start space-x-2 text-sm text-red-500">
               <ExclamationCircleIcon
@@ -256,16 +279,89 @@ export default function Demos() {
               <span>{error.message}</span>
             </p>
           )}
+
+          <Listbox
+            disabled={working}
+            value={selectedModel}
+            onChange={setSelectedModel}
+          >
+            {({ open }) => (
+              <>
+                <div className="relative">
+                  <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    <span className="block truncate">{selectedModel.name}</span>
+                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                      <ChevronUpDownIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Listbox.Button>
+
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                      {models.map((model) => (
+                        <Listbox.Option
+                          key={model.model}
+                          className={({ active }) =>
+                            classNames(
+                              active
+                                ? "bg-indigo-600 text-white"
+                                : "text-gray-900",
+                              "relative cursor-default select-none py-2 pl-3 pr-9"
+                            )
+                          }
+                          value={model}
+                        >
+                          {({ selectedModel, active }) => (
+                            <>
+                              <span
+                                className={classNames(
+                                  selectedModel
+                                    ? "font-semibold"
+                                    : "font-normal",
+                                  "block truncate"
+                                )}
+                              >
+                                {model.name}
+                              </span>
+
+                              {selectedModel ? (
+                                <span
+                                  className={classNames(
+                                    active ? "text-white" : "text-indigo-600",
+                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                  )}
+                                >
+                                  <CheckIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                </span>
+                              ) : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
+                  </Transition>
+                </div>
+              </>
+            )}
+          </Listbox>
           <button
             type="submit"
             disabled={working}
-            className="disabled:opacity-[50%] text-xl inline-flex justify-center rounded-md bg-meadow py-2 px-3 font-semibold text-ink shadow-lg hover:bg-darkCharcoal hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+            className="disabled:bg-storm disabled:text-white md:w-auto w-full md:px-10 inline-flex justify-center rounded-md bg-meadow py-2 px-3 text-sm font-semibold text-black shadow-sm hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
           >
             Run
-            <PlayIcon
-              className="h-[1.2rem] w-[1.2rem] mt-[0.25rem] ml-[0.5rem] stroke-2"
-              aria-hidden="true"
-            />
+            <PlayIcon className="inline w-4 ml-2 mt-[0.1rem]" />
           </button>
         </div>
         <div className="pt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 gap-x-4">
