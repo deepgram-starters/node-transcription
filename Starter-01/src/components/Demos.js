@@ -19,11 +19,6 @@ const models = [
     name: "Deepgram Enhanced",
     version: "latest",
   },
-  {
-    model: "whisper",
-    name: "OpenAI Whisper",
-    version: "large",
-  },
 ];
 
 const files = [
