@@ -15,9 +15,14 @@ function classNames(...classes) {
 
 const models = [
   {
-    model: "general",
-    name: "Deepgram Enhanced",
-    version: "latest",
+    model: "general-beta",
+    name: "Deepgram Nova",
+    tier: "enhanced",
+  },
+  {
+    model: "whisper",
+    version: "medium",
+    name: "Whisper Cloud",
   },
 ];
 
@@ -138,7 +143,14 @@ export default function Demos() {
     formData.append("file", file);
     formData.append("url", url);
     formData.append("model", selectedModel.model);
-    formData.append("version", selectedModel.version);
+
+    if (selectedModel.version) {
+      formData.append("version", selectedModel.version);
+    }
+
+    if (selectedModel.tier) {
+      formData.append("tier", selectedModel.tier);
+    }
 
     try {
       const response = await fetch(`${apiOrigin}/api`, {
@@ -280,6 +292,7 @@ export default function Demos() {
           >
             {({ open }) => (
               <>
+                <Listbox.Label>Select a transcription model:</Listbox.Label>
                 <div className="relative">
                   <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                     <span className="block truncate">{selectedModel.name}</span>
