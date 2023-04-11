@@ -18,7 +18,6 @@ app.use(cors({ origin: appOrigin }));
 app.post("/api", upload.single("file"), async (req, res) => {
   const { body, file } = req;
   const { url, features, model, version, tier } = body;
-  console.log(url, features, model, version, tier);
   const dgFeatures = JSON.parse(features);
 
   let dgRequest = null;
@@ -40,13 +39,6 @@ app.post("/api", upload.single("file"), async (req, res) => {
         "Error: You need to choose a file to transcribe your own audio."
       );
     }
-
-    console.log({
-      ...dgFeatures,
-      model,
-      ...(version ? { version } : null),
-      ...(model === "whisper" ? null : { tier }),
-    });
 
     // send request to deepgram
     const transcription = await deepgram.transcription.preRecorded(dgRequest, {
