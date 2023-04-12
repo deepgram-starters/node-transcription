@@ -1,6 +1,4 @@
 import deepgramLogo from "../assets/deepgram.svg";
-import nodeLogo from "../assets/node.svg";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 
 <svg
@@ -19,13 +17,11 @@ export default function Hero() {
     <div className="pb-10 lg:pb-20 border-b">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <div className="mt-10 flex items-center justify-center gap-x-6">
+          <div className="mt-10 mb-5 flex justify-center">
             <img src={deepgramLogo} alt="Deepgram logo" className="h-16 mb-3" />
-            <XMarkIcon className="h-8" />
-            <img src={nodeLogo} alt="Node.js logo" className="mb-3 h-16" />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-            Deepgram Node.js Starter
+            Deepgram Node Starter
           </h1>
           <p className="mt-6 text-lg leading-8 text-gray-600">
             This is a starter application that demonstrates integrating{" "}
@@ -33,14 +29,10 @@ export default function Hero() {
               Deepgram
             </a>
             . This version has a{" "}
-            <a className="text-iris" href="https://nodejs.org/">
-              Node.js
+            <a className="text-iris" href="https://nodejs.org">
+              Node Express
             </a>{" "}
-            server, with a{" "}
-            <a className="text-iris" href="https://reactjs.org/">
-              React
-            </a>{" "}
-            client.
+            server, with a static React client.
           </p>
           <div className="mt-5 flex items-center justify-center gap-x-5">
             <a

@@ -17,7 +17,7 @@ app.use(cors({ origin: appOrigin }));
 
 app.post("/api", upload.single("file"), async (req, res) => {
   const { body, file } = req;
-  const { url, features, model, version, tier = "enhanced" } = body;
+  const { url, features, model, version, tier } = body;
   const dgFeatures = JSON.parse(features);
 
   let dgRequest = null;
@@ -43,8 +43,8 @@ app.post("/api", upload.single("file"), async (req, res) => {
     // send request to deepgram
     const transcription = await deepgram.transcription.preRecorded(dgRequest, {
       ...dgFeatures,
-      version,
       model,
+      ...(version ? { version } : null),
       ...(model === "whisper" ? null : { tier }),
     });
 
