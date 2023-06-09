@@ -1,13 +1,17 @@
 import { Fragment, useState, createRef } from "react";
-import { PlayIcon } from "@heroicons/react/24/outline";
+import { ArrowDownTrayIcon, PlayIcon } from "@heroicons/react/24/outline";
 import {
   ExclamationCircleIcon,
   CloudArrowUpIcon,
   DocumentTextIcon,
   CheckIcon,
   ChevronUpDownIcon,
+  FolderArrowDownIcon,
+  MicrophoneIcon,
+  StopIcon,
 } from "@heroicons/react/20/solid";
 import { Listbox, Transition } from "@headlessui/react";
+import { io } from 'socket.io-client';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -15,14 +19,17 @@ function classNames(...classes) {
 
 const models = [
   {
-    model: "general-beta",
+    model: "general", // Free Accounts
+    // model: "general-beta", // Paid Accounts
     name: "Deepgram Nova",
     tier: "enhanced",
   },
   {
-    model: "whisper",
-    version: "medium",
+    model: "whisper-tiny",
+    version: "tiny", // Does not work with Free Accounts
+    // version: "medium", // Paid Accounts
     name: "Whisper Cloud",
+    tier: "base", // Now required (Docs say it is not https://developers.deepgram.com/docs/model#whisper)
   },
 ];
 
@@ -118,11 +125,13 @@ export default function Demos() {
   const [summaries, setSummaries] = useState();
   const [topics, setTopics] = useState();
   const [language, setLanguage] = useState();
-  const [transcript, setTranscript] = useState();
+  const [transcript, setTranscript] = useState('');
 
   // ui state
   const [done, setDone] = useState();
   const [working, setWorking] = useState();
+  const [recording, setRecording] = useState(false);
+  const [hasRecording, setHasRecording] = useState(false);
   const [selectedModel, setSelectedModel] = useState(models[0]);
 
   // request state
@@ -131,6 +140,12 @@ export default function Demos() {
   const [url, setUrl] = useState(files[0].value);
 
   const apiOrigin = "http://localhost:3001";
+
+  const [mediaRecorder, setMediaRecorder] = useState();
+  const [recordedBlobs, setRecordedBlobs] = useState([]);
+
+  let liveUtterances = [];
+  let liveTranscript = '';
 
   const onSubmitHandler = async (e) => {
     setError();
@@ -216,13 +231,142 @@ export default function Demos() {
     });
   };
 
+  const startRecording = () => {
+    setDone(false);
+    setRecordedBlobs([]);
+    setHasRecording(false);
+    let options = {mimeType: 'audio/webm'};
+    let tmpMediaRecorder = null;
+    let tmpSocket = null;
+    navigator.mediaDevices.getUserMedia({audio: true}).then((stream) => {
+        try {
+            tmpMediaRecorder = new MediaRecorder(stream, options);
+            setMediaRecorder(tmpMediaRecorder);
+            tmpSocket = io(apiOrigin, (options = { 
+              transports: ["websocket"],
+              cors: {}
+            }));
+        } catch (e) {
+            console.error('Exception while creating MediaRecorder:', e);
+            return;
+        }
+        setRecording(true);
+        tmpMediaRecorder.onstop = (event) => {
+          console.log('Recorder stopped: ', event);
+        };
+        tmpMediaRecorder.ondataavailable = (event) => {
+          if (event.data && event.data.size > 0) {
+              setRecordedBlobs(recordedBlobs => [...recordedBlobs, event.data]);
+          }
+        };
+        // Get live updates every 500ms
+        tmpMediaRecorder.start(500);
+    }).then(() => {
+      tmpSocket.on("connect", async () => {
+        if (tmpMediaRecorder.state === "inactive") tmpMediaRecorder.start(500);
+
+        tmpMediaRecorder.addEventListener("dataavailable", (event) => {
+          tmpSocket.emit("packet-sent", event.data);
+        });
+
+        tmpSocket.addEventListener("print-transcript", (msg) => {
+          liveTranscript += msg + ' ';
+          setTranscript(liveTranscript);
+
+          liveUtterances.push({transcript: msg});
+          setUtterances(liveUtterances);
+
+          setDone(true);
+        });
+      });
+      tmpSocket.on("error", (error) => {
+        console.log('Socket.io error: ', error);
+      });
+      tmpSocket.on("disconnect", (error) => {
+        console.log('Socket.io disconnect: ', error);
+      });
+      tmpSocket.on("connect_error", (error) => {
+        console.log('Socket.io connect_error: ', error);
+      });
+    }).catch((err) => {
+      console.error('Media stream creation failed: ', err);
+    });
+  }
+
+  const stopRecording = () => {
+      mediaRecorder.stop();
+      setRecording(false);
+      setHasRecording(true);
+      liveUtterances = [];
+      setUtterances(liveUtterances);
+      liveTranscript = [];
+      setTranscript(liveTranscript);
+      setDone(false);
+  }
+
+  const downloadRecording = () => {
+      const blob = new Blob(recordedBlobs, {type: 'audio/wav; codecs=0'});
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'test.wav';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+      }, 100);
+  }
+
   return (
     <div className="mx-auto max-w-7xl p-6 lg:p-8">
       <form onSubmit={onSubmitHandler}>
         <h2 className="text-2xl sm:text-4xl font-semibold mb-4">
           Choose an audio file
         </h2>
-        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 mx-auto">
+        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 gap-x-4 mx-auto">
+          <li className="relative">
+            <label
+              className="peer-disabled:opacity-50 min-h-full flex flex-col p-5 rounded-lg bg-white px-4 py-5 shadow-lg sm:p-6 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:bg-iris peer-checked:text-white"
+              htmlFor="file"
+            >
+              <FolderArrowDownIcon className="w-8 mb-2 self-center" />
+              <p className="text-center lg:text-left">
+                Transcribe Live Audio / Record to File.
+              </p>
+              <div className="self-center">
+                <button
+                  id="recordButton"
+                  type="button"
+                  disabled={recording}
+                  onClick={startRecording}
+                  className="disabled:bg-storm disabled:text-white md:w-auto w-full mr-2 md:px-2 inline-flex justify-center rounded-md bg-meadow py-2 px-3 text-sm font-semibold text-black shadow-sm hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                >
+                  <MicrophoneIcon className="inline w-4 ml-0 mt-[0.1rem]" />
+                </button>
+                <button
+                  id="stopButton"
+                  type="button"
+                  disabled={!recording}
+                  onClick={stopRecording}
+                  className="disabled:bg-storm disabled:text-white md:w-auto w-full mr-2 md:px-2 inline-flex justify-center rounded-md bg-meadow py-2 px-3 text-sm font-semibold text-black shadow-sm hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                >
+                  <StopIcon className="inline w-4 ml-0 mt-[0.1rem]" />
+                </button>
+                <button
+                    id="downloadButton"
+                    type="button"
+                    disabled={!hasRecording}
+                    onClick={downloadRecording}
+                    className="disabled:bg-storm disabled:text-white md:w-auto w-full md:px-2 inline-flex justify-center rounded-md bg-meadow py-2 px-3 text-sm font-semibold text-black shadow-sm hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                  >
+                    <ArrowDownTrayIcon className="inline w-4 ml-0 mt-[0.1rem]" />
+                </button>
+              </div>
+            </label>
+          </li>
+
           <li className="relative">
             <input
               className="sr-only peer"
