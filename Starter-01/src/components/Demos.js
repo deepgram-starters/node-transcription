@@ -133,6 +133,7 @@ export default function Demos() {
   const [recording, setRecording] = useState(false);
   const [hasRecording, setHasRecording] = useState(false);
   const [selectedModel, setSelectedModel] = useState(models[0]);
+  const [useAI, setUseAI] = useState(false);
 
   // request state
   const [features, setFeatures] = useState({});
@@ -145,7 +146,6 @@ export default function Demos() {
   const [recordedBlobs, setRecordedBlobs] = useState([]);
 
   let liveUtterances = [];
-  let liveTranscript = '';
 
   const onSubmitHandler = async (e) => {
     setError();
@@ -231,7 +231,7 @@ export default function Demos() {
     });
   };
 
-  const startRecording = () => {
+  const startRecording = async () => {
     setDone(false);
     setRecordedBlobs([]);
     setHasRecording(false);
@@ -262,7 +262,7 @@ export default function Demos() {
         // Get live updates every 500ms
         tmpMediaRecorder.start(500);
     }).then(() => {
-      tmpSocket.on("connect", async () => {
+      tmpSocket.on("connect", () => {
         if (tmpMediaRecorder.state === "inactive") tmpMediaRecorder.start(500);
 
         tmpMediaRecorder.addEventListener("dataavailable", (event) => {
@@ -270,13 +270,13 @@ export default function Demos() {
         });
 
         tmpSocket.addEventListener("print-transcript", (msg) => {
-          liveTranscript += msg + ' ';
-          setTranscript(liveTranscript);
-
-          liveUtterances.push({transcript: msg});
+          liveUtterances.push({transcript: msg, color: '#000099'});
           setUtterances(liveUtterances);
-
           setDone(true);
+
+          if(useAI){
+            promptAI(msg);
+          }
         });
       });
       tmpSocket.on("error", (error) => {
@@ -299,8 +299,6 @@ export default function Demos() {
       setHasRecording(true);
       liveUtterances = [];
       setUtterances(liveUtterances);
-      liveTranscript = [];
-      setTranscript(liveTranscript);
       setDone(false);
   }
 
@@ -318,6 +316,31 @@ export default function Demos() {
           window.URL.revokeObjectURL(url);
       }, 100);
   }
+
+  const promptAI = async (msg) => {
+    const response = await fetch(`${apiOrigin}/chat?message=${encodeURIComponent(msg)}`, {
+      method: "GET"
+    });
+
+    const data = await response.json();
+
+    // Make sure to configure your OpenAI API Key in config.json for this to work
+    if(data && !data.err){
+      let reply = data.response.data.content;
+
+      liveUtterances.push({transcript: reply, color: '#009900'});
+      setUtterances(liveUtterances);
+
+      setDone(true);
+    } else {
+      alert('Error: You must configure your OpenAI API Key in the config.json to use the "Respond with AI" feature.');
+      setUseAI(false);
+    }
+  }
+
+  const useAIHandler = (e) => {
+    setUseAI(!useAI);
+  };
 
   return (
     <div className="mx-auto max-w-7xl p-6 lg:p-8">
@@ -363,6 +386,29 @@ export default function Demos() {
                   >
                     <ArrowDownTrayIcon className="inline w-4 ml-0 mt-[0.1rem]" />
                 </button>
+                <br/>
+                <div className="space-y-5">
+                  <div className="relative flex items-start">
+                    <div className="flex h-6 items-center">
+                      <input
+                              type="checkbox"
+                              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                              id="useAI"
+                              name="useAI"
+                              onChange={useAIHandler}
+                            />
+                    </div>
+                  
+                    <div className="ml-3 leading-6">
+                      <label
+                        htmlFor="useAI"
+                        className="font-medium text-gray-900"
+                      >
+                        Respond with AI
+                      </label>
+                    </div>
+                  </div>
+                </div>
               </div>
             </label>
           </li>
@@ -600,7 +646,7 @@ export default function Demos() {
                     <h4 className="text-xl font-semibold">Utterances</h4>
                     <ul>
                       {utterances.map((detects, i) => (
-                        <li key={i} className="mb-2">
+                        <li key={i} className="mb-2" style={{ color: detects.color }}>
                           {detects.transcript}
                         </li>
                       ))}

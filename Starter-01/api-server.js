@@ -4,6 +4,26 @@ const cors = require("cors");
 const express = require("express");
 const multer = require("multer");
 
+const { ChatOpenAI }  = require( "langchain/chat_models/openai");
+const { HumanChatMessage, SystemChatMessage }  = require( "langchain/schema");
+let chat = null;
+if(config.openAIApiKey){
+  chat = new ChatOpenAI({ openAIApiKey: config.openAIApiKey, temperature: 0 });
+}
+
+async function promptAI(message){
+  const response = await chat.call([
+    new SystemChatMessage(
+      "You are a helpful assistant that helps developers with the DeepGram API."
+    ),
+    new HumanChatMessage(
+      message
+    ),
+  ]);
+  console.log(response);
+  return response;
+}
+
 const appPort = process.env.SERVER_PORT || 3000;
 const port = process.env.API_PORT || 3001;
 const appOrigin = config.appOrigin || `http://localhost:${appPort}`;
@@ -31,6 +51,26 @@ let io;
 let globalSocket;
 
 app.use(cors({ origin: appOrigin }));
+
+app.get("/chat", async (req, res) => {
+  // Respond with error if no API Key set
+  if(!config.openAIApiKey){
+    res.status(500).send({ err: 'No OpenAI API Key set in Config.json' });
+    return;
+  }
+  let message = req.query.message;
+  console.log('message',message);
+
+  try {
+    let response = await promptAI(message);
+
+    res.send({ response });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    res.status(500).send({ err: err.message ? err.message : err });
+  }
+});
 
 app.post("/api", upload.single("file"), async (req, res) => {
   const { body, file } = req;
@@ -101,12 +141,14 @@ const initDgConnection = (disconnect) => {
 };
 
 const createWebsocket = () => {
-  io = new Server(httpServer, { transports: "websocket" });
-  io.on("connection", (socket) => {
-    console.log(`Connected on server side with ID: ${socket.id}`);
-    globalSocket = socket;
-    initDgConnection(false);
-  });
+  if(!io){
+    io = new Server(httpServer, { transports: "websocket" });
+    io.on("connection", (socket) => {
+      console.log(`Connected on server side with ID: ${socket.id}`);
+      globalSocket = socket;
+      initDgConnection(false);
+    });
+  }
 };
 
 const createNewDeepgramLive = (dg) =>

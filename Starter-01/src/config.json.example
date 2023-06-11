@@ -1,3 +1,4 @@
 {
-  "dgKey": "%api_key%"
+  "dgKey": "%api_key%",
+  "opneAIApiKey": ""
 }
