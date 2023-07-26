@@ -37,7 +37,7 @@ Copy the code from `config.json.example` and create a new file called `config.js
 
 #### Run the application
 
-The `dev` script will run a web and API server concurrently. Once running, you can [access the application in your browser](http://localhost:3000/).
+The `dev` script will run a web and API server concurrently. Once running, you can [access the application in your browser](http://localhost:8080/).
 
 ```bash
 npm run dev
@@ -74,5 +74,5 @@ docker build -t deepgram-javascript-01 .
 Run the docker image.
 
 ```sh
-docker run --init -p 3000:3000 -p 3001:3001 -it deepgram-javascript-01
+docker run --init -p 8080:8080 -p 8080:8080 -it deepgram-javascript-01
 ```

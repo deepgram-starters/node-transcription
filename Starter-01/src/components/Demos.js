@@ -15,9 +15,9 @@ function classNames(...classes) {
 
 const models = [
   {
-    model: "general-beta",
+    model: "general",
     name: "Deepgram Nova",
-    tier: "enhanced",
+    tier: "nova",
   },
   {
     model: "whisper",
@@ -130,7 +130,7 @@ export default function Demos() {
   const [file, setFile] = useState();
   const [url, setUrl] = useState(files[0].value);
 
-  const apiOrigin = "http://localhost:3001";
+  const apiOrigin = "http://localhost:8080";
 
   const onSubmitHandler = async (e) => {
     setError();

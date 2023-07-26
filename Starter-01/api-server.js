@@ -4,8 +4,8 @@ const cors = require("cors");
 const express = require("express");
 const multer = require("multer");
 
-const appPort = process.env.SERVER_PORT || 3000;
-const port = process.env.API_PORT || 3001;
+const appPort = process.env.SERVER_PORT || 8080;
+const port = process.env.API_PORT || 8080;
 const appOrigin = config.appOrigin || `http://localhost:${appPort}`;
 
 const deepgram = new Deepgram(config.dgKey, "api.beta.deepgram.com");
@@ -13,7 +13,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const app = express();
-app.use(cors({ origin: appOrigin }));
+app.use(cors());
 
 app.post("/api", upload.single("file"), async (req, res) => {
   const { body, file } = req;
@@ -44,6 +44,7 @@ app.post("/api", upload.single("file"), async (req, res) => {
     const transcription = await deepgram.transcription.preRecorded(dgRequest, {
       ...dgFeatures,
       model,
+      tier,
       ...(version ? { version } : null),
       ...(model === "whisper" ? null : { tier }),
     });
