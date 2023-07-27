@@ -39,10 +39,10 @@ COPY --from=build /app/src/config.json ./src/config.json
 COPY --from=build /app/server.js .
 COPY --from=build /app/api-server.js .
 
-EXPOSE 8080
+EXPOSE 8081
 EXPOSE 8080
 
-ENV SERVER_PORT=8080
+ENV SERVER_PORT=8081
 ENV API_PORT=8080
 ENV NODE_ENV production
 
