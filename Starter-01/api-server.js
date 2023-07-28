@@ -1,5 +1,5 @@
 const { Deepgram } = require("@deepgram/sdk");
-const config = require("./src/config.json");
+const config = require("./config.json");
 const cors = require("cors");
 const express = require("express");
 const multer = require("multer");

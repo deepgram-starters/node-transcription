@@ -12,9 +12,6 @@
     "prod": "npm-run-all --parallel server api-server"
   },
   "dependencies": {
-    "@babel/core": "^7.21",
-    "@babel/plugin-syntax-flow": "^7.18",
-    "@babel/plugin-transform-react-jsx": "^7.21",
     "@deepgram/sdk": "^1.18.1",
     "cors": "^2.8",
     "express": "^4.18",
