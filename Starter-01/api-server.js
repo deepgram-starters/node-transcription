@@ -1,10 +1,10 @@
 const { Deepgram } = require("@deepgram/sdk");
-const config = require("./src/config.json");
+const config = require("./config.json");
 const cors = require("cors");
 const express = require("express");
 const multer = require("multer");
 
-const appPort = process.env.SERVER_PORT || 8080;
+const appPort = process.env.SERVER_PORT || 8081;
 const port = process.env.API_PORT || 8080;
 const appOrigin = config.appOrigin || `http://localhost:${appPort}`;
 

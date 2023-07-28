@@ -1,6 +1,6 @@
 # Deepgram Node.js Starter
 
-This sample demonstrates interacting with the Deepgram API from Node.js. It uses the Deepgram Node SDK, and has a React companion application to interact with the Node integration.
+This sample demonstrates interacting with the Deepgram API from Node.js. It uses the Deepgram Node SDK, with a javascript client built from web components.
 
 ## Sign-up to Deepgram
 
@@ -37,42 +37,8 @@ Copy the code from `config.json.example` and create a new file called `config.js
 
 #### Run the application
 
-The `dev` script will run a web and API server concurrently. Once running, you can [access the application in your browser](http://localhost:8080/).
+The `dev` script will run a web and API server concurrently. Once running, you can [access the application in your browser](http://localhost:8081/).
 
 ```bash
 npm run dev
-```
-
-### Using Docker
-
-Follow these steps to run the application with docker.
-
-#### Edit the config file
-
-Copy the contents of `config.json.example` and create a new file called `config.json`. Paste in the contents and enter your API key you generated in the [Deepgram console](https://console.deepgram.com/).
-
-```json
-{
-  "dgKey": "api_key"
-}
-```
-
-#### Useful binary files
-
-You can run the binary `exec.sh` for Mac or Linux, and `exec.ps1` for Windows.
-
-#### Dockerfile
-
-To use the `Dockerfile` to run the application with docker, run the build and run commands as required.
-
-Build the docker image.
-
-```sh
-docker build -t deepgram-javascript-01 .
-```
-
-Run the docker image.
-
-```sh
-docker run --init -p 8080:8080 -p 8080:8080 -it deepgram-javascript-01
 ```
