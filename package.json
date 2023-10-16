@@ -3,13 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "npm-run-all --parallel api-server server",
-    "server": "node server.js",
-    "server:dev": "nodemon server.js",
-    "api-server": "node api-server.js",
-    "api-server:dev": "nodemon api-server.js",
-    "dev": "npm-run-all --parallel server:dev api-server:dev",
-    "prod": "npm-run-all --parallel server api-server"
+    "start": "node server.js"
   },
   "dependencies": {
     "@deepgram/sdk": "^1.18.1",

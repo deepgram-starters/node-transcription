@@ -1,4 +1,4 @@
-import { html, css, LitElement } from "//cdn.skypack.dev/lit";
+import { html, css, LitElement } from "//cdn.skypack.dev/lit@v2.8.0";
 
 class AppTranscript extends LitElement {
   static properties = {
@@ -120,24 +120,34 @@ class AppTranscript extends LitElement {
     if (this.transcript.length > 0) {
       return html`
         <section>Transcript: ${this.transcript}</section>
-        ${this.summary
-          ? html` <section>Summary: ${this.summary}</section>`
-          : null}
-        ${this.topics.length > 0
-          ? html` <section>
+        ${
+          this.summary
+            ? html` <section>Summary: ${this.summary}</section>`
+            : null
+        }
+        ${
+          this.topics.length > 0
+            ? html` <section>
               Topics:
-              ${this.topics &&
-              this.topics.map((topic) => html`<div>${topic}</div>`)}
+              ${
+                this.topics &&
+                this.topics.map((topic) => html`<div>${topic}</div>`)
+              }
             </section>`
-          : null}
-        ${this.diarize
-          ? html`<section>
-              ${this.diarize &&
-              this.diarize.map((speaker) => {
-                return html`<div class="diarize-section">${speaker}</div>`;
-              })}
+            : null
+        }
+        ${
+          this.diarize
+            ? html`<section>
+              ${
+                this.diarize &&
+                this.diarize.map((speaker) => {
+                  return html`<div class="diarize-section">${speaker}</div>`;
+                })
+              }
             </section>`
-          : null}
+            : null
+        }
       `;
     } else {
       return null;

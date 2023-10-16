@@ -1,19 +1,17 @@
 const { Deepgram } = require("@deepgram/sdk");
 const config = require("./config.json");
-const cors = require("cors");
 const express = require("express");
 const multer = require("multer");
+const path = require("path");
 
-const appPort = process.env.SERVER_PORT || 8081;
 const port = process.env.API_PORT || 8080;
-const appOrigin = config.appOrigin || `http://localhost:${appPort}`;
-
 const deepgram = new Deepgram(config.dgKey, "api.beta.deepgram.com");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 const app = express();
-app.use(cors());
+
+app.use(express.static(path.join(__dirname, "static")));
 
 app.post("/api", upload.single("file"), async (req, res) => {
   const { body, file } = req;
@@ -24,7 +22,7 @@ app.post("/api", upload.single("file"), async (req, res) => {
 
   try {
     // validate the URL for a URL request
-    if (url && url.startsWith("https://res.cloudinary.com/deepgram")) {
+    if (url) {
       dgRequest = { url };
     }
 
@@ -65,4 +63,6 @@ app.post("/api", upload.single("file"), async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`API Server listening on port ${port}`));
+app.listen(port, () =>
+  console.log(`Starter app running at http://localhost:${port}`)
+);

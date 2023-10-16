@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "//cdn.skypack.dev/lit";
+import { css, html, LitElement } from "//cdn.skypack.dev/lit@v2.8.0";
 import "./app-button-link.js";
 class AppHeader extends LitElement {
   static styles = css`

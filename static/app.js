@@ -1,4 +1,4 @@
-import { html, LitElement } from "//cdn.skypack.dev/lit";
+import { html, LitElement } from "//cdn.skypack.dev/lit@v2.8.0";
 
 import "./components/app-header.js";
 import "./components/app-body.js";

@@ -1,4 +1,4 @@
-import { html, css, LitElement } from "//cdn.skypack.dev/lit";
+import { html, css, LitElement } from "//cdn.skypack.dev/lit@v2.8.0";
 import "./app-demo.js";
 import "./app-audio-select.js";
 import "./app-model-select.js";

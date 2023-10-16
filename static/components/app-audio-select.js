@@ -1,4 +1,4 @@
-import { html, css, LitElement } from "//cdn.skypack.dev/lit";
+import { html, css, LitElement } from "//cdn.skypack.dev/lit@v2.8.0";
 
 class AppAudioSelect extends LitElement {
   static properties = {
