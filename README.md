@@ -36,10 +36,10 @@ Copy the code from `config.json.example` and create a new file called `config.js
 
 #### Run the application
 
-The `dev` script will run a web and API server concurrently. Once running, you can [access the application in your browser](http://localhost:8081/).
+The `dev` script will run a web and API server concurrently. Once running, you can [access the application in your browser](http://localhost:8080/).
 
 ```bash
-npm run dev
+npm start
 ```
 
 ## What is Deepgram?
