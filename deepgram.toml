@@ -1,3 +1,11 @@
+[meta]
+  title = "Deepgram Node.js Starter"
+  description = "Basic demo for using Deepgram with Node.js"
+  author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
+  useCase = "prerecorded"
+  language = "javascript"
+  framework = "node"
+
 [build]
   command = "npm install"
 
@@ -6,4 +14,4 @@
   output = "config.json"
 
 [post-build]
-  message = "Run `npm run dev` to get up and running."
+  message = "Run `npm start` to get up and running."
