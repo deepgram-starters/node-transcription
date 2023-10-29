@@ -14,7 +14,7 @@ Follow these steps to get started with this starter application.
 
 #### Clone the repository
 
-Go to GitHub and [clone the repository](https://github.com/deepgram-starters/deepgram-javascript-node-starter).
+Go to GitHub and [clone the repository](https://github.com/deepgram-starters/prerecorded-node-starter).
 
 #### Install dependencies
 
