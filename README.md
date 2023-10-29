@@ -1,4 +1,4 @@
-# Deepgram Node.js Starter
+# Prerecorded Node.js Starter
 
 This sample demonstrates interacting with the Deepgram API from Node.js. It uses the Deepgram Node SDK, with a javascript client built from web components.
 
