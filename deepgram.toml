@@ -1,10 +1,10 @@
 [meta]
   title = "Deepgram Node.js Starter"
-  description = "Basic demo for using Deepgram with Node.js"
+  description = "Basic demo for using Deepgram to transcribe files with Node.js"
   author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
-  useCase = "prerecorded"
-  language = "javascript"
-  framework = "node"
+  useCase = "Prerecorded"
+  language = "JavaScript"
+  framework = "Node"
 
 [build]
   command = "npm install"
