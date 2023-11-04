@@ -36,7 +36,7 @@ Copy the code from `config.json.example` and create a new file called `config.js
 
 #### Run the application
 
-The `dev` script will run a web and API server concurrently. Once running, you can [access the application in your browser](http://localhost:8080/).
+Once running, you can [access the application in your browser](http://localhost:8080/).
 
 ```bash
 npm start
