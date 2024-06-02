@@ -1,4 +1,4 @@
-# Prerecorded Node.js Starter
+# Pre-recorded Transcription Node.js Starter
 
 [![Discord](https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat)](https://discord.gg/xWRaCDBtW4)
 
