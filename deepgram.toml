@@ -1,5 +1,5 @@
 [meta]
-  title = "Prerecorded Node.js Starter"
+  title = "Pre-recorded Transcription Node.js Starter"
   description = "Basic demo for using Deepgram to transcribe files with Node.js"
   author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
   useCase = "Prerecorded"
