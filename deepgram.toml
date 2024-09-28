@@ -1,6 +1,6 @@
 [meta]
-  title = "Pre-recorded Transcription Node.js Starter"
-  description = "Basic demo for using Deepgram to transcribe files with Node.js"
+  title = "Node Transcription Starter"
+  description = "Starter repository for Deepgram Transcription in Node"
   author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
   useCase = "Prerecorded"
   language = "JavaScript"
