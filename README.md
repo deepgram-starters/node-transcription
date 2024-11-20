@@ -1,8 +1,6 @@
 # Node Transcription Starter
 
-[![Discord](https://dcbadge.vercel.app/api/server/xWRaCDBtW4?style=flat)](https://discord.gg/xWRaCDBtW4)
-
-This sample demonstrates interacting with the Deepgram API from Node.js. It uses the Deepgram Node SDK, with a javascript client built from web components.
+Get started using Deepgram's Transcription with this Node demo app.
 
 ## What is Deepgram?
 
