@@ -2,7 +2,7 @@
   title = "Node Transcription Starter"
   description = "Get started using Deepgram's Transcription with this Node demo app"
   author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
-  useCase = "Prerecorded"
+  useCase = "STT"
   language = "JavaScript"
   framework = "Node"
 
