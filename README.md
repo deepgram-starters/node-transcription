@@ -1,4 +1,4 @@
-# Node Transcription Starter
+# Node PreRecorded Transcription Starter
 
 Get started using Deepgram's Transcription with this Node demo app.
 
