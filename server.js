@@ -3,6 +3,20 @@ const config = require("./config.json");
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
+const Ajv = require("ajv");
+const addFormats = require("ajv-formats");
+
+// Initialize Ajv for schema validation
+const ajv = new Ajv({ strict: false });
+addFormats(ajv);
+
+// Load contract schemas from starter-contracts repo
+// These schemas define the standard response format all starter apps should follow
+const transcriptSchema = require("../starter-contracts/interfaces/stt/schema/transcript.json");
+const errorSchema = require("../starter-contracts/interfaces/stt/schema/error.json");
+
+const validateTranscript = ajv.compile(transcriptSchema);
+const validateError = ajv.compile(errorSchema);
 
 const port = process.env.API_PORT || 8080;
 const deepgram = new Deepgram(config.dgKey, "api.beta.deepgram.com");
@@ -147,6 +161,15 @@ app.post("/stt/transcribe", express.raw({ type: ['audio/wav', 'audio/mpeg', 'aud
     // Transform Deepgram response to our standard format
     const standardResponse = transformDeepgramResponse(transcription, dgFeatures);
 
+    // Validate response against schema (conformance check)
+    const isValid = validateTranscript(standardResponse);
+    if (!isValid) {
+      console.error('Response validation failed:', validateTranscript.errors);
+      console.error('Response that failed:', JSON.stringify(standardResponse, null, 2));
+      // This should never happen - indicates a bug in transformDeepgramResponse
+      throw new Error('Internal error: response does not match schema');
+    }
+
     // Echo X-Request-Id header if provided
     const requestId = req.headers['x-request-id'];
     if (requestId) {
@@ -194,7 +217,8 @@ function transformDeepgramResponse(transcription, features) {
       text: word.word,
       start: word.start,
       end: word.end,
-      ...(word.speaker !== undefined && { speaker: `Speaker ${word.speaker}` })
+      // Include speaker as string if present (Deepgram returns numbers, convert to string)
+      ...(word.speaker !== undefined && { speaker: String(word.speaker) })
     }));
   }
 
@@ -207,13 +231,27 @@ function transformDeepgramResponse(transcription, features) {
     }
   }
 
-  // Add metadata
-  response.metadata = {
-    ...(transcription.metadata?.model_info && { model_info: transcription.metadata.model_info }),
-    ...(transcription.metadata?.channels && { channels: transcription.metadata.channels }),
-    ...(features.model && { model: features.model }),
-    ...(transcription.metadata?.request_id && { request_id: transcription.metadata.request_id })
-  };
+  // Add metadata (schema allows additionalProperties: true)
+  // Only include metadata if there's something to add
+  const metadata = {};
+
+  if (transcription.metadata?.model_info) {
+    metadata.model_info = transcription.metadata.model_info;
+  }
+  if (transcription.metadata?.channels) {
+    metadata.channels = transcription.metadata.channels;
+  }
+  if (features.model) {
+    metadata.model = features.model;
+  }
+  if (transcription.metadata?.request_id) {
+    metadata.request_id = transcription.metadata.request_id;
+  }
+
+  // Only add metadata field if it has content
+  if (Object.keys(metadata).length > 0) {
+    response.metadata = metadata;
+  }
 
   return response;
 }
