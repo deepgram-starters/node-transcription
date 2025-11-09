@@ -62,6 +62,22 @@ Open [http://localhost:3000](http://localhost:3000)
 - **Frontend** (`frontend/`): Vite-powered web UI for audio upload and transcription display
 - **API**: Integrates with [Deepgram's Speech-to-Text API](https://developers.deepgram.com/)
 
+## Customization
+
+This starter is designed to be forked and modified for your needs. See the [Backend Architecture Guide](./docs/Backend-Architecture.md) for:
+
+- Detailed code walkthrough and explanations
+- How to add Deepgram features (diarization, sentiment, etc.)
+- Common customization examples
+- Adding new API endpoints
+- Testing strategies
+
+Quick customizations:
+- **Change model**: Edit `DEFAULT_MODEL` in `server.js`
+- **Add features**: Modify `transcribeAudio()` function
+- **Change response format**: Edit `formatTranscriptionResponse()`
+- **Add authentication**: Add middleware before routes
+
 ## Getting Help
 
 - [Open an issue](https://github.com/deepgram-starters/node-transcription/issues)
