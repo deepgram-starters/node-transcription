@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  State Preview Mode:
+  Use URL query parameters to preview different app states for styling and development:
+
+  - Default (initial state): index.html
+  - Waiting state: index.html?state=waiting
+  - Results state: index.html?state=results
+  - Error state: index.html?state=error
+-->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pre-recorded Speech-to-Text transcription demo using Deepgram">
+  <title>Deepgram Transcription Demo</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Deepgram Styles -->
+  <link rel="stylesheet" href="./node_modules/@deepgram/styles/dist/deepgram.css" />
+
+  <script type="module" src="/main.js"></script>
+
+  <style>
+    /* Override base font size - change this value to scale the entire UI */
+    /* :root {
+      --dg-base-font-size: 14px;
+    } */
+
+    /* Override brand colors - change these values to customize the theme */
+    /* Gradient borders will automatically derive from these colors (secondary → primary) */
+    /* :root {
+      --dg-primary: #ff6b35;
+      --dg-secondary: #4ecdc4;
+    } */
+
+    body {
+      background: var(--dg-charcoal, #1a1a1f);
+    }
+
+    /* Custom column borders for visual separation */
+    .dg-column--sidebar-left {
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--dg-almost-black, #050506);
+      overflow-y: auto;
+    }
+
+    .dg-column--main {
+      background: var(--dg-background, #0b0b0c);
+      overflow-y: auto;
+    }
+
+    .dg-column--sidebar-right {
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--dg-almost-black, #050506);
+      overflow-y: auto;
+    }
+
+    @media (min-width: 768px) {
+      .dg-column--sidebar-right {
+        border-top: none;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .dg-column--sidebar-left {
+        border-bottom: none;
+      }
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .history-item {
+      display: block;
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+      border: 1px solid var(--dg-pebble, #4e4e52);
+      background: var(--dg-background, #0b0b0c);
+      color: var(--dg-text, #fbfbff);
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      border-color: var(--dg-primary, #13ef95);
+      background: var(--dg-charcoal, #1a1a1f);
+    }
+
+    .history-item--active {
+      border-color: var(--dg-primary, #13ef95);
+      background: var(--dg-charcoal, #1a1a1f);
+      box-shadow: 0 0 0 1px var(--dg-primary, #13ef95);
+    }
+
+    .history-item__id {
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: var(--dg-muted, #949498);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.25rem;
+    }
+
+    .history-item__time {
+      font-size: 0.7rem;
+      color: var(--dg-slate, #949498);
+    }
+
+    .history-item__model {
+      font-size: 0.7rem;
+      color: var(--dg-primary, #13ef95);
+      margin-top: 0.25rem;
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--dg-muted, #949498);
+      font-size: 0.875rem;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.5;
+    }
+
+    .metadata-grid {
+      display: grid;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .metadata-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .metadata-label {
+      font-size: 0.75rem;
+      color: var(--dg-muted, #949498);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .metadata-value {
+      font-size: 0.875rem;
+      color: var(--dg-text, #fbfbff);
+      font-family: monospace;
+    }
+
+    .controls-section {
+      margin-bottom: 2rem;
+    }
+
+    .audio-source-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      row-gap: 1rem;
+      column-gap: 1rem;
+    }
+
+    .audio-source-grid .dg-card {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+      .audio-source-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .transcript-text {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--dg-fog, #edede2);
+    }
+
+    /* Override status icon sizing for better alignment */
+    .dg-status--with-icon {
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .dg-status--with-icon .dg-status__icon {
+      font-size: 1em;
+      line-height: 1;
+    }
+
+    /* Disabled state for cards and form elements */
+    .dg-card--disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
+    .dg-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="dg-header">
+    <div class="dg-header__container">
+      <div class="dg-header__logo">
+        <span class="dg-header__logo-text">Deepgram</span>
+      </div>
+      <nav class="dg-header__nav">
+        <a href="https://developers.deepgram.com" class="dg-btn dg-btn--ghost dg-btn--sm" target="_blank"
+          rel="noopener noreferrer">Docs</a>
+        <a href="https://console.deepgram.com" class="dg-btn dg-btn--secondary dg-btn--sm" target="_blank"
+          rel="noopener noreferrer">Free API Key</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="dg-columns" style="min-height: calc(100vh - 65px);">
+    <div class="dg-columns__wrapper">
+      <!-- Left Sidebar -->
+      <aside class="dg-column dg-column--sidebar-left dg-column--xl">
+        <!-- Audio Source Selection -->
+        <div class="controls-section">
+          <div class="dg-form-field dg-form-field--full">
+            <label class="dg-form-label">Select Audio Source</label>
+            <div class="audio-source-grid">
+              <!-- Sample Audio Cards -->
+              <label class="dg-card dg-card--selectable dg-card--disabled" id="card-spacewalk">
+                <input type="radio" name="audioSource" value="https://dpgr.am/stanford.mp3" disabled>
+                <div class="dg-card--selectable__content">
+                  <div class="dg-item-title">
+                    <i class="fa-solid fa-mortar-board dg-card--selectable__icon"></i>
+                    Debate
+                  </div>
+                  <p class="dg-prose dg-prose--small" style="margin: 0;">Stanford copyright debate</p>
+                </div>
+              </label>
+
+              <label class="dg-card dg-card--selectable dg-card--disabled" id="card-bueller">
+                <input type="radio" name="audioSource" value="https://dpgr.am/aishow.m4a" disabled>
+                <div class="dg-card--selectable__content">
+                  <div class="dg-item-title">
+                    <i class="fa-solid fa-microphone dg-card--selectable__icon"></i>
+                    Podcast
+                  </div>
+                  <p class="dg-prose dg-prose--small" style="margin: 0;">Deep learning impact</p>
+                </div>
+              </label>
+
+              <label class="dg-card dg-card--selectable dg-card--disabled" id="card-conversation">
+                <input type="radio" name="audioSource" value="https://dpgr.am/dispute.wav" disabled>
+                <div class="dg-card--selectable__content">
+                  <div class="dg-item-title">
+                    <i class="fa-solid fa-headset dg-card--selectable__icon"></i>
+                    Call Center
+                  </div>
+                  <p class="dg-prose dg-prose--small" style="margin: 0;">Report scam payment</p>
+                </div>
+              </label>
+
+              <!-- File Upload Card -->
+              <label class="dg-card dg-card--file-upload dg-card--disabled">
+                <input type="file" id="audioFile" accept="audio/*,video/*" disabled>
+                <input type="checkbox" id="fileSelected" class="dg-sr-only" disabled>
+                <div class="dg-card--file-upload__content">
+                  <div class="dg-item-title">
+                    <i class="fa-solid fa-arrow-up dg-card--file-upload__icon"></i>
+                    Upload audio
+                  </div>
+                  <p class="file-upload-description dg-prose dg-prose--small" style="margin: 0;">Choose from device</p>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Model Selection -->
+        <div class="controls-section">
+          <div class="dg-form-field dg-form-field--full">
+            <label for="model" class="dg-form-label">Model</label>
+            <select id="model" class="dg-input" disabled>
+              <option value="nova-3">Nova 3</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div id="statusContainer" style="margin-top: 1.5rem; display: none;">
+          <div id="statusMessage" class="dg-status dg-status--with-icon"></div>
+        </div>
+
+        <!-- Metadata -->
+        <div id="metadataContainer" style="margin-top: 2rem; display: none;">
+          <h3 class="dg-form-label" style="margin-bottom: 0.75rem;">Metadata</h3>
+          <div class="metadata-grid" id="metadataGrid"></div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="dg-column dg-column--main" id="mainContent">
+        <div class="empty-state">
+          <div class="empty-state-icon dg-text-primary"><i class="fa-solid fa-microphone"></i></div>
+          <h2 class="dg-section-heading">Select your audio and options to try out transcription</h2>
+          <p class="dg-prose">
+            Choose an audio source from the sidebar, configure your options, and click transcribe to get started.
+          </p>
+          <button id="transcribeBtn" class="dg-btn dg-btn--primary" style="margin-top: 1.5rem;" disabled>
+            Transcribe Audio
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <!-- History Sidebar (right column) -->
+    <aside class="dg-column dg-column--sidebar-right dg-column--lg collapsed" id="historySidebar">
+      <button type="button" id="historySidebarToggle" class="history-sidebar-toggle" aria-label="Toggle history sidebar"
+        aria-expanded="false">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <h3 class="dg-form-label" id="historyTitle" style="margin-bottom: 1rem;">History (0)</h3>
+      <div id="historySidebarContent">
+        <div class="history-empty">No transcriptions yet</div>
+      </div>
+    </aside>
+  </div>
+
+  <style>
+    /* Toggle button for floating right sidebar - matches component library TOC styling */
+    .history-sidebar-toggle {
+      display: none;
+    }
+
+    @media (min-width: 768px) and (max-width: 1279px) {
+
+      /* Allow toggle button to overflow outside sidebar */
+      .dg-column--sidebar-right {
+        overflow: visible;
+      }
+
+      .history-sidebar-toggle {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        margin-left: -1.8rem;
+        transform: translateY(-50%);
+        width: 1.8rem;
+        height: 6rem;
+        background: var(--dg-charcoal, #1a1a1f);
+        border: 1px solid var(--dg-border, #2c2c33);
+        border-right: none;
+        border-radius: 0.5rem 0 0 0.5rem;
+        color: var(--dg-muted, #949498);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        transition: all 200ms;
+        z-index: 21;
+        box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .history-sidebar-toggle:hover {
+        border-color: var(--dg-primary, #13ef95);
+        color: var(--dg-primary, #13ef95);
+        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .history-sidebar-toggle i {
+        transition: transform 300ms ease;
+      }
+
+      .dg-column--sidebar-right.collapsed .history-sidebar-toggle i {
+        transform: rotate(180deg);
+      }
+    }
+  </style>
+
+  <script>
+    // Toggle right sidebar (floating mode between 768px-1280px)
+    (function () {
+      const historySidebar = document.getElementById('historySidebar');
+      const toggleBtn = document.getElementById('historySidebarToggle');
+
+      if (!historySidebar || !toggleBtn) return;
+
+      // Check if we're in the floating mode range
+      function isFloatingMode() {
+        return window.innerWidth >= 768 && window.innerWidth < 1280;
+      }
+
+      // Load saved state only for floating mode
+      function loadSidebarState() {
+        if (isFloatingMode()) {
+          const savedState = localStorage.getItem('right-sidebar-collapsed');
+          if (savedState === 'false') {
+            historySidebar.classList.remove('collapsed');
+            toggleBtn.setAttribute('aria-expanded', 'true');
+          } else {
+            historySidebar.classList.add('collapsed');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+          }
+        } else {
+          // Remove collapsed class when not in floating mode
+          historySidebar.classList.remove('collapsed');
+        }
+      }
+
+      // Toggle sidebar
+      function toggleSidebar() {
+        if (!isFloatingMode()) return;
+
+        const isCollapsed = historySidebar.classList.toggle('collapsed');
+        toggleBtn.setAttribute('aria-expanded', !isCollapsed);
+        localStorage.setItem('right-sidebar-collapsed', isCollapsed);
+      }
+
+      // Add click handler to toggle button
+      toggleBtn.addEventListener('click', toggleSidebar);
+
+      // Load initial state
+      loadSidebarState();
+
+      // Handle window resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(loadSidebarState, 250);
+      });
+    })();
+  </script>
+
+</body>
+
+</html>

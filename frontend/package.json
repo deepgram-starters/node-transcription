@@ -1,0 +1,44 @@
+{
+  "name": "@deepgram/transcription-html",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Minimal HTML starter with Deepgram design system styles",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "deepgram",
+    "speech-to-text",
+    "transcription",
+    "html",
+    "javascript",
+    "css",
+    "audio",
+    "voice-recognition"
+  ],
+  "author": "Deepgram Starter UIs Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deepgram/starter-uis.git",
+    "directory": "apps/transcription-html"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not op_mini all"
+  ],
+  "dependencies": {
+    "@deepgram/styles": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
