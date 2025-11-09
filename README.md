@@ -1,67 +1,56 @@
 # Node Transcription Starter
 
-Get started using Deepgram's Transcription with this Node demo app.
+Speech-to-text demo using Deepgram's API with Node.js backend and web frontend.
 
-## What is Deepgram?
+## Prerequisites
 
-[Deepgram’s](https://deepgram.com/) voice AI platform provides APIs for speech-to-text, text-to-speech, and full speech-to-speech voice agents. Over 200,000+ developers use Deepgram to build voice AI products and features.
+- [Deepgram API Key](https://console.deepgram.com/signup?jump=keys) (sign up for free)
+- Node.js 18+ and pnpm
 
-## Sign-up to Deepgram
+## Quick Start
 
-Before you start, it's essential to generate a Deepgram API key to use in this project. [Sign-up now for Deepgram and create an API key](https://console.deepgram.com/signup?jump=keys).
-
-## Quickstart
-
-### Manual
-
-Follow these steps to get started with this starter application.
-
-#### Clone the repository
-
-Go to GitHub and [clone the repository](https://github.com/deepgram-starters/prerecorded-node-starter).
-
-#### Install dependencies
-
-Install the project dependencies.
+1. **Install dependencies**
 
 ```bash
-npm install
+pnpm install
+cd frontend && pnpm install && cd ..
 ```
 
-#### Edit the config file
+2. **Set your API key**
 
-Copy the code from `config.json.example` and create a new file called `config.json`. Paste in the code and enter your API key you generated in the [Deepgram console](https://console.deepgram.com/).
-
-```json
-{
-  "dgKey": "api_key"
-}
-```
-
-#### Run the application
-
-Once running, you can [access the application in your browser](http://localhost:8080/).
+Create a `.env` file:
 
 ```bash
-npm start
+DEEPGRAM_API_KEY=your_api_key_here
 ```
 
-## Issue Reporting
+3. **Run the app**
 
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Security Policy](./SECURITY.md) details the procedure for contacting Deepgram.
+```bash
+pnpm start
+```
+
+Open [http://localhost:3000](http://localhost:3000)
+
+## Features
+
+- Upload audio files or provide URLs for transcription
+- Multiple model options (Nova 3, Nova 2, Base)
+- View transcription history
+- Responsive web interface
+
+## How It Works
+
+- **Backend** (`server.js`): Node.js/Express server implementing the `/stt/transcribe` endpoint
+- **Frontend** (`frontend/`): Vite-powered web UI for audio upload and transcription display
+- **API**: Integrates with [Deepgram's Speech-to-Text API](https://developers.deepgram.com/)
 
 ## Getting Help
 
-We love to hear from you so if you have questions, comments or find a bug in the project, let us know! You can either:
-
-- [Open an issue in this repository](https://github.com/deepgram-starters/prerecorded-node-starter/issues/new)
-- [Join the Deepgram Github Discussions Community](https://github.com/orgs/deepgram/discussions)
-- [Join the Deepgram Discord Community](https://discord.gg/xWRaCDBtW4)
-
-## Author
-
-[Deepgram](https://deepgram.com)
+- [Open an issue](https://github.com/deepgram-starters/node-transcription/issues)
+- [Join our Discord](https://discord.gg/xWRaCDBtW4)
+- [Deepgram Documentation](https://developers.deepgram.com/)
 
 ## License
 
-This project is licensed under the MIT license. See the [LICENSE](./LICENSE) file for more info.
+MIT - See [LICENSE](./LICENSE)
