@@ -3,10 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "npm-run-all --parallel start:backend start:frontend",
-    "start:backend": "node --no-deprecation server.js",
-    "start:frontend": "cd frontend && npm run dev -- --port 5173 --no-open --logLevel error",
-    "dev": "nodemon --no-deprecation server.js"
+    "postinstall": "cd frontend && pnpm install",
+    "build": "cd frontend && pnpm run build",
+    "start": "node --no-deprecation server.js",
+    "dev": "npm-run-all --parallel dev:backend dev:frontend",
+    "dev:backend": "NODE_ENV=development nodemon --no-deprecation server.js",
+    "dev:frontend": "cd frontend && pnpm run dev -- --port 5173 --no-open --logLevel error"
   },
   "dependencies": {
     "@deepgram/sdk": "^4.11.2",

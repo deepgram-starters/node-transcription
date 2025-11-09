@@ -34,6 +34,7 @@ if (!apiKey) {
 
 const port = process.env.PORT || 3000;
 const vitePort = process.env.VITE_PORT || 5173;
+const isDevelopment = process.env.NODE_ENV === "development";
 const deepgram = createClient(apiKey);
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -129,20 +130,35 @@ app.post("/stt/transcribe", upload.single("file"), async (req, res) => {
   }
 });
 
-// Proxy all other requests to Vite dev server
+// Serve frontend - proxy in development, static files in production
 // IMPORTANT: This must be registered AFTER API routes
-app.use(
-  "/",
-  createProxyMiddleware({
-    target: `http://localhost:${vitePort}`,
-    changeOrigin: true,
-    ws: true, // proxy websockets for HMR
-  })
-);
+if (isDevelopment) {
+  // Development: Proxy to Vite dev server
+  app.use(
+    "/",
+    createProxyMiddleware({
+      target: `http://localhost:${vitePort}`,
+      changeOrigin: true,
+      ws: true, // proxy websockets for HMR
+    })
+  );
+} else {
+  // Production: Serve static files from frontend/dist
+  app.use(express.static(path.join(__dirname, "frontend", "dist")));
+  
+  // Catch-all route for SPA
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+  });
+}
 
 app.listen(port, () => {
   console.log(`\n🚀 STT Backend Server running at http://localhost:${port}`);
-  console.log(
-    `📡 Proxying frontend from Vite dev server on port ${vitePort}\n`
-  );
+  if (isDevelopment) {
+    console.log(
+      `📡 Proxying frontend from Vite dev server on port ${vitePort}\n`
+    );
+  } else {
+    console.log(`📦 Serving built frontend from frontend/dist\n`);
+  }
 });
