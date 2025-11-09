@@ -1,17 +1,22 @@
 [meta]
-  title = "Node Transcription Starter"
-  description = "Get started using Deepgram's Transcription with this Node demo app"
-  author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
-  useCase = "STT"
-  language = "JavaScript"
-  framework = "Node"
+title = "Node Transcription Starter"
+description = "Get started using Deepgram's Transcription with this Node demo app"
+author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
+useCase = "STT"
+language = "JavaScript"
+framework = "Node"
+
+[pre-build]
+command = "npm install"
+message = "Dependencies installed"
 
 [build]
-  command = "npm install"
+command = "npm run build"
+message = "Build completed"
 
-[config]
-  sample = "config.json.example"
-  output = "config.json"
+[build.config]
+sample = "example.env"
+output = ".env"
 
 [post-build]
-  message = "Run `npm start` to get up and running."
+message = "Run `npm start` to get up and running."

@@ -36,9 +36,9 @@
     "not op_mini all"
   ],
   "dependencies": {
-    "@deepgram/styles": "workspace:*"
+    "@deepgram/styles": "latest"
   },
   "devDependencies": {
-    "vite": "^5.0.0"
+    "vite": "^7.2.2"
   }
 }
