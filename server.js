@@ -33,6 +33,7 @@ if (!apiKey) {
 }
 
 const port = process.env.PORT || 3000;
+const host = process.env.HOST || "0.0.0.0";
 const vitePort = process.env.VITE_PORT || 5173;
 const isDevelopment = process.env.NODE_ENV === "development";
 const deepgram = createClient(apiKey);
@@ -144,16 +145,12 @@ if (isDevelopment) {
   );
 } else {
   // Production: Serve static files from frontend/dist
-  app.use(express.static(path.join(__dirname, "frontend", "dist")));
-  
-  // Catch-all route for SPA
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
-  });
+  const distPath = path.join(__dirname, "frontend", "dist");
+  app.use(express.static(distPath));
 }
 
-app.listen(port, () => {
-  console.log(`\n🚀 STT Backend Server running at http://localhost:${port}`);
+app.listen(port, host, () => {
+  console.log(`\n🚀 STT Backend Server running at http://${host}:${port}`);
   if (isDevelopment) {
     console.log(
       `📡 Proxying frontend from Vite dev server on port ${vitePort}\n`
