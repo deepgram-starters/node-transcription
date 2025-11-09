@@ -13,8 +13,9 @@ Speech-to-text demo using Deepgram's API with Node.js backend and web frontend.
 
 ```bash
 pnpm install
-cd frontend && pnpm install && cd ..
 ```
+
+This automatically installs both backend and frontend dependencies.
 
 2. **Set your API key**
 
@@ -26,7 +27,16 @@ DEEPGRAM_API_KEY=your_api_key_here
 
 3. **Run the app**
 
+**Development mode** (with hot reload):
+
 ```bash
+pnpm dev
+```
+
+**Production mode** (build and serve):
+
+```bash
+pnpm build
 pnpm start
 ```
 
@@ -38,6 +48,13 @@ Open [http://localhost:3000](http://localhost:3000)
 - Multiple model options (Nova 3, Nova 2, Base)
 - View transcription history
 - Responsive web interface
+
+## Scripts
+
+- `pnpm install` - Install backend and frontend dependencies
+- `pnpm dev` - Run in development mode with hot reload
+- `pnpm build` - Build frontend for production
+- `pnpm start` - Start production server (serves built frontend)
 
 ## How It Works
 
