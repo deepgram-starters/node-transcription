@@ -1,4 +1,54 @@
-// DOM Elements
+/**
+ * Transcription HTML Starter - Frontend Application
+ *
+ * This is a vanilla JavaScript frontend that provides a transcription UI
+ * for Deepgram's Speech-to-Text service. It's designed to be easily
+ * modified and extended for your own projects.
+ *
+ * Key Features:
+ * - Audio source selection (URLs or file upload)
+ * - Model selection
+ * - Real-time transcription
+ * - History management with localStorage
+ * - Responsive UI with Deepgram design system
+ *
+ * Architecture:
+ * - Pure vanilla JavaScript (no frameworks required)
+ * - Uses native Fetch API for HTTP requests
+ * - LocalStorage for history persistence
+ * - Event-driven UI updates
+ */
+
+// ============================================================================
+// CONFIGURATION - Customize these values for your needs
+// ============================================================================
+
+/**
+ * API endpoint for transcription requests
+ * Change this if your backend is hosted elsewhere
+ */
+const API_ENDPOINT = "/stt/transcribe";
+
+/**
+ * LocalStorage key for history persistence
+ * Change this if you want to use a different storage key
+ */
+const HISTORY_KEY = "deepgram_transcription_history";
+
+/**
+ * Maximum number of history entries to store
+ * Prevents localStorage from growing too large
+ */
+const MAX_HISTORY_ENTRIES = 50;
+
+// ============================================================================
+// STATE MANAGEMENT - Application state variables
+// ============================================================================
+
+/**
+ * DOM Elements - Cached references to frequently used elements
+ * These are initialized in the init() function
+ */
 let audioSourceRadios;
 let audioFileInput;
 let modelSelect;
@@ -11,13 +61,30 @@ let metadataGrid;
 let historyTitle;
 let historySidebarContent;
 
-// LocalStorage key for history
-const HISTORY_KEY = "deepgram_transcription_history";
-
-// Currently active transcription ID
+/**
+ * Currently active transcription ID
+ * Used to highlight the active history item
+ */
 let activeRequestId = null;
 
-// LocalStorage History Management
+// ============================================================================
+// LOCALSTORAGE HISTORY MANAGEMENT
+// ============================================================================
+
+/**
+ * Retrieves transcription history from localStorage
+ *
+ * @returns {Array} Array of history entries, or empty array if none exist
+ *
+ * History entry structure:
+ * {
+ *   id: string,              // Request ID from Deepgram or local timestamp
+ *   timestamp: string,       // ISO 8601 timestamp
+ *   audioSource: string,     // URL or filename
+ *   model: string,           // Model name used
+ *   response: object         // Full transcription response
+ * }
+ */
 function getTranscriptionHistory() {
   try {
     const history = localStorage.getItem(HISTORY_KEY);
@@ -28,11 +95,19 @@ function getTranscriptionHistory() {
   }
 }
 
+/**
+ * Saves a transcription result to localStorage history
+ *
+ * @param {Object} transcriptionData - The transcription response from the API
+ * @param {string} audioSource - URL or filename of the audio source
+ * @param {string} model - Model name used for transcription
+ * @returns {Object|null} The saved history entry, or null if save failed
+ */
 function saveTranscriptionToHistory(transcriptionData, audioSource, model) {
   try {
     const history = getTranscriptionHistory();
 
-    // Get request_id from metadata or generate a fallback
+    // Get request_id from metadata or generate a fallback ID
     const requestId = transcriptionData.metadata?.request_id || `local_${Date.now()}`;
 
     const historyEntry = {
@@ -46,8 +121,8 @@ function saveTranscriptionToHistory(transcriptionData, audioSource, model) {
     // Add to beginning of array (newest first)
     history.unshift(historyEntry);
 
-    // Keep only last 50 entries to prevent localStorage from getting too large
-    const trimmedHistory = history.slice(0, 50);
+    // Keep only the most recent entries to prevent localStorage overflow
+    const trimmedHistory = history.slice(0, MAX_HISTORY_ENTRIES);
 
     localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmedHistory));
 
@@ -61,6 +136,11 @@ function saveTranscriptionToHistory(transcriptionData, audioSource, model) {
   }
 }
 
+/**
+ * Clears all transcription history from localStorage
+ *
+ * @returns {boolean} True if successful, false if error occurred
+ */
 function clearTranscriptionHistory() {
   try {
     localStorage.removeItem(HISTORY_KEY);
@@ -72,12 +152,25 @@ function clearTranscriptionHistory() {
   }
 }
 
+/**
+ * Retrieves a specific history entry by its request ID
+ *
+ * @param {string} requestId - The unique ID of the history entry
+ * @returns {Object|undefined} The history entry, or undefined if not found
+ */
 function getHistoryEntryById(requestId) {
   const history = getTranscriptionHistory();
   return history.find((entry) => entry.id === requestId);
 }
 
-// Render history in sidebar
+// ============================================================================
+// HISTORY UI RENDERING
+// ============================================================================
+
+/**
+ * Renders the history sidebar with all transcription entries
+ * Highlights the currently active entry if one is selected
+ */
 function renderHistory() {
   const history = getTranscriptionHistory();
 
@@ -127,7 +220,11 @@ function renderHistory() {
   }
 }
 
-// Load a history entry and display it
+/**
+ * Loads and displays a history entry by its request ID
+ *
+ * @param {string} requestId - The unique ID of the history entry to load
+ */
 function loadHistoryEntry(requestId) {
   const entry = getHistoryEntryById(requestId);
 
@@ -148,7 +245,10 @@ function loadHistoryEntry(requestId) {
   renderHistory();
 }
 
-// Check URL for request_id and load if present
+/**
+ * Checks URL query parameters for a request_id and loads it if present
+ * This enables deep linking to specific transcription results
+ */
 function checkUrlForRequestId() {
   const urlParams = new URLSearchParams(window.location.search);
   const requestId = urlParams.get("request_id");
@@ -161,7 +261,19 @@ function checkUrlForRequestId() {
   }
 }
 
-// Check if form is valid
+// ============================================================================
+// FORM VALIDATION
+// ============================================================================
+
+/**
+ * Checks if the form is valid and ready to submit
+ *
+ * Form is valid if either:
+ * - A radio button (audio source) is selected, OR
+ * - A file has been uploaded
+ *
+ * @returns {boolean} True if form is valid, false otherwise
+ */
 function isFormValid() {
   // Check if a radio button is selected
   const selectedRadio = document.querySelector('input[name="audioSource"]:checked');
@@ -173,13 +285,28 @@ function isFormValid() {
   return !!(selectedRadio || hasFile);
 }
 
-// Update form validation state
+/**
+ * Updates the transcribe button's disabled state based on form validity
+ * Called whenever form inputs change
+ */
 function updateFormValidation() {
   const isValid = isFormValid();
   transcribeBtn.disabled = !isValid;
 }
 
-// Initialize
+// ============================================================================
+// INITIALIZATION & SETUP
+// ============================================================================
+
+/**
+ * Initializes the application
+ * - Caches DOM element references
+ * - Sets up event listeners
+ * - Loads initial state from URL parameters
+ * - Renders history sidebar
+ *
+ * Called when DOM is ready
+ */
 function init() {
   // Get DOM elements
   audioSourceRadios = document.querySelectorAll('input[name="audioSource"]');
@@ -212,7 +339,13 @@ function init() {
   checkUrlForRequestId();
 }
 
-// Setup event listeners
+/**
+ * Sets up all event listeners for the application
+ * - Audio source radio buttons
+ * - File upload input
+ * - Transcribe button
+ * - Browser navigation (back/forward)
+ */
 function setupEventListeners() {
   // Audio source radios - listen for changes directly on radios
   audioSourceRadios.forEach((radio) => {
@@ -231,7 +364,16 @@ function setupEventListeners() {
   });
 }
 
-// Handle radio button change
+// ============================================================================
+// EVENT HANDLERS
+// ============================================================================
+
+/**
+ * Handles radio button (audio source) selection
+ * - Clears file upload when a radio is selected
+ * - Resets file upload card display
+ * - Updates form validation
+ */
 function handleRadioChange() {
   // Clear file upload when a radio is selected
   if (audioFileInput) {
@@ -254,7 +396,15 @@ function handleRadioChange() {
   updateFormValidation();
 }
 
-// Handle file upload
+/**
+ * Handles file upload selection
+ * - Unchecks all radio buttons
+ * - Checks the file upload checkbox
+ * - Updates card display with filename
+ * - Updates form validation
+ *
+ * @param {Event} e - The file input change event
+ */
 function handleFileUpload(e) {
   const file = e.target.files[0];
   if (file) {
@@ -281,7 +431,22 @@ function handleFileUpload(e) {
   updateFormValidation();
 }
 
-// Handle transcribe
+/**
+ * Handles transcription request
+ * Main function that:
+ * - Validates form input
+ * - Creates FormData with file or URL
+ * - Makes API request to transcription endpoint
+ * - Saves result to history
+ * - Displays transcription result
+ * - Handles errors
+ *
+ * CUSTOMIZATION TIPS:
+ * - Modify API_ENDPOINT constant to change backend URL
+ * - Add additional form parameters before making request
+ * - Customize error handling logic
+ * - Add progress tracking or file size validation
+ */
 async function handleTranscribe() {
   const selectedRadio = document.querySelector('input[name="audioSource"]:checked');
   const file = audioFileInput.files[0];
@@ -319,7 +484,7 @@ async function handleTranscribe() {
     }
 
     // Make API request with multipart/form-data
-    const response = await fetch("/stt/transcribe", {
+    const response = await fetch(API_ENDPOINT, {
       method: "POST",
       body: formData,
       // Don't set Content-Type header - browser will set it with boundary
@@ -371,7 +536,14 @@ async function handleTranscribe() {
   }
 }
 
-// Show working status
+// ============================================================================
+// UI STATE MANAGEMENT
+// ============================================================================
+
+/**
+ * Shows "processing" status indicator
+ * Displays spinner and hides metadata
+ */
 function showWorking() {
   statusContainer.style.display = "block";
   statusMessage.className = "dg-status dg-status--with-icon dg-status--primary";
@@ -380,7 +552,12 @@ function showWorking() {
   metadataContainer.style.display = "none";
 }
 
-// Show error status
+/**
+ * Shows error status indicator
+ * Displays error icon and message, hides metadata
+ *
+ * @param {string} message - The error message to display
+ */
 function showError(message) {
   statusContainer.style.display = "block";
   statusMessage.className = "dg-status dg-status--with-icon dg-status--error";
@@ -388,12 +565,28 @@ function showError(message) {
   metadataContainer.style.display = "none";
 }
 
-// Hide status
+/**
+ * Hides the status indicator
+ */
 function hideStatus() {
   statusContainer.style.display = "none";
 }
 
-// Display transcript
+// ============================================================================
+// RESULTS DISPLAY
+// ============================================================================
+
+/**
+ * Displays the transcription result in the main content area
+ *
+ * @param {Object} data - The transcription response data
+ * @param {string} data.transcript - The transcribed text
+ *
+ * CUSTOMIZATION TIP:
+ * - Modify this function to display additional fields like paragraphs, words, etc.
+ * - Add word-level highlighting or timestamps
+ * - Format output differently (e.g., show speakers for diarization)
+ */
 function displayTranscript(data) {
   const transcript = data.transcript || "No transcript available";
 
@@ -407,7 +600,14 @@ function displayTranscript(data) {
   `;
 }
 
-// Reset to initial state
+/**
+ * Resets the application to its initial state
+ * - Clears active request ID
+ * - Shows form sections
+ * - Hides metadata and status
+ * - Resets main content to empty state
+ * - Re-enables form elements
+ */
 function resetToInitialState() {
   // Clear active request ID
   activeRequestId = null;
@@ -458,7 +658,20 @@ function resetToInitialState() {
   renderHistory();
 }
 
-// Display metadata
+/**
+ * Displays transcription metadata in the sidebar
+ * Shows duration, word count, and any metadata from the response
+ *
+ * @param {Object} data - The transcription response data
+ * @param {number} [data.duration] - Audio duration in seconds
+ * @param {Array} [data.words] - Array of words with timestamps
+ * @param {Object} [data.metadata] - Additional metadata from Deepgram
+ *
+ * CUSTOMIZATION TIP:
+ * - Add or remove metadata fields
+ * - Format values differently (e.g., duration as MM:SS)
+ * - Add custom calculated metrics
+ */
 function displayMetadata(data) {
   // Hide form sections
   const controlsSections = document.querySelectorAll(".controls-section");
@@ -516,14 +729,28 @@ function displayMetadata(data) {
   `;
 }
 
-// Escape HTML
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+/**
+ * Escapes HTML special characters to prevent XSS attacks
+ * Uses browser's native text rendering to safely escape content
+ *
+ * @param {string} text - The text to escape
+ * @returns {string} HTML-safe escaped text
+ */
 function escapeHtml(text) {
   const div = document.createElement("div");
   div.textContent = text;
   return div.innerHTML;
 }
 
-// Disable all form elements
+/**
+ * Disables all form elements during transcription processing
+ * Prevents user from making changes while request is in flight
+ * Adds visual feedback with disabled styling
+ */
 function disableFormElements() {
   // Query DOM directly to ensure we get the latest elements
   const radios = document.querySelectorAll('input[name="audioSource"]');
@@ -558,7 +785,10 @@ function disableFormElements() {
   });
 }
 
-// Enable all form elements
+/**
+ * Re-enables all form elements after transcription completes
+ * Removes disabled styling and re-validates form
+ */
 function enableFormElements() {
   // Query DOM directly to ensure we get the latest elements
   const radios = document.querySelectorAll('input[name="audioSource"]');
@@ -590,7 +820,20 @@ function enableFormElements() {
   });
 }
 
-// Check URL parameters and set state
+// ============================================================================
+// STATE PREVIEW MODE - For development and testing
+// ============================================================================
+
+/**
+ * Checks URL parameters for state preview mode
+ * Used for testing different UI states during development
+ *
+ * Available states:
+ * - ?state=waiting  - Shows processing/loading state
+ * - ?state=results  - Shows results with mock data
+ * - ?state=error    - Shows error state
+ * - (no parameter)  - Shows normal initial state
+ */
 function checkUrlStateParameter() {
   const urlParams = new URLSearchParams(window.location.search);
   const state = urlParams.get("state");
@@ -605,7 +848,10 @@ function checkUrlStateParameter() {
   // Default state (initial) is already set by HTML
 }
 
-// Set waiting state with mock data
+/**
+ * Sets the UI to "waiting" state with mock data
+ * Used for development and testing
+ */
 function setWaitingState() {
   // Select first radio button
   const firstRadio = document.querySelector('input[name="audioSource"]');
@@ -635,7 +881,10 @@ function setWaitingState() {
   // Elements stay disabled (they're disabled by default in HTML)
 }
 
-// Set results state with mock data
+/**
+ * Sets the UI to "results" state with mock transcription data
+ * Used for development and testing
+ */
 function setResultsState() {
   // Select first radio button
   const firstRadio = document.querySelector('input[name="audioSource"]');
@@ -671,7 +920,10 @@ function setResultsState() {
   hideStatus();
 }
 
-// Set error state with mock error
+/**
+ * Sets the UI to "error" state with mock error message
+ * Used for development and testing
+ */
 function setErrorState() {
   // Select first radio button
   const firstRadio = document.querySelector('input[name="audioSource"]');
@@ -705,7 +957,14 @@ function setErrorState() {
   showError("Unable to connect to transcription service. Please try again later.");
 }
 
-// Initialize when DOM is ready
+// ============================================================================
+// APPLICATION BOOTSTRAP
+// ============================================================================
+
+/**
+ * Initialize the application when DOM is ready
+ * Handles both loading and already-loaded states
+ */
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     init();
