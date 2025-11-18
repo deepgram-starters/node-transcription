@@ -45,38 +45,15 @@ Open [http://localhost:3000](http://localhost:3000)
 ## Features
 
 - Upload audio files or provide URLs for transcription
-- Multiple model options (Nova 3, Nova 2, Base)
+- Multiple model options
 - View transcription history
 - Responsive web interface
-
-## Scripts
-
-- `pnpm install` - Install backend and frontend dependencies
-- `pnpm dev` - Run in development mode with hot reload
-- `pnpm build` - Build frontend for production
-- `pnpm start` - Start production server (serves built frontend)
 
 ## How It Works
 
 - **Backend** (`server.js`): Node.js/Express server implementing the `/stt/transcribe` endpoint
 - **Frontend** (`frontend/`): Vite-powered web UI for audio upload and transcription display
 - **API**: Integrates with [Deepgram's Speech-to-Text API](https://developers.deepgram.com/)
-
-## Customization
-
-This starter is designed to be forked and modified for your needs. See the [Backend Architecture Guide](./docs/Backend-Architecture.md) for:
-
-- Detailed code walkthrough and explanations
-- How to add Deepgram features (diarization, sentiment, etc.)
-- Common customization examples
-- Adding new API endpoints
-- Testing strategies
-
-Quick customizations:
-- **Change model**: Edit `DEFAULT_MODEL` in `server.js`
-- **Add features**: Modify `transcribeAudio()` function
-- **Change response format**: Edit `formatTranscriptionResponse()`
-- **Add authentication**: Add middleware before routes
 
 ## Getting Help
 
