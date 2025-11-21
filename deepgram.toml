@@ -7,11 +7,11 @@ language = "JavaScript"
 framework = "Node"
 
 [pre-build]
-command = "npm install"
+command = "pnpm install"
 message = "Dependencies installed"
 
 [build]
-command = "npm run build"
+command = "pnpm build"
 message = "Build completed"
 
 [build.config]
@@ -19,4 +19,4 @@ sample = "example.env"
 output = ".env"
 
 [post-build]
-message = "Run `npm start` to get up and running."
+message = "Run `pnpm start` to get up and running."
