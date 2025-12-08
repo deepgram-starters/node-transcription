@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@deepgram/styles':
-        specifier: latest
+        specifier: 0.0.9
         version: 0.0.9
     devDependencies:
       vite:
-        specifier: ^7.2.2
+        specifier: 7.2.2
         version: 7.2.2
 
 packages:

@@ -25,11 +25,14 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
 
 # Install node modules
-COPY package.json pnpm-lock.yaml ./
-COPY frontend/package.json frontend/pnpm-lock.yaml frontend/
+COPY .npmrc package.json pnpm-lock.yaml ./
+COPY frontend/.npmrc frontend/package.json frontend/pnpm-lock.yaml frontend/
+# Install root dependencies
 RUN pnpm install --frozen-lockfile --prod=false
+# Install frontend dependencies separately (postinstall scripts disabled for security)
+RUN cd frontend && pnpm install --frozen-lockfile --prod=false && cd ..
 
-# Copy application code
+# Copy application code (including .npmrc for security settings)
 COPY . .
 
 # Build application

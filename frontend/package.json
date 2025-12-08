@@ -2,13 +2,15 @@
   "name": "@deepgram/transcription-html",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "pnpm@10.0.0",
   "description": "Minimal HTML starter with Deepgram design system styles",
   "main": "index.html",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "security-check": "snyk test --severity-threshold=low --package-manager=pnpm --fail-on=all"
   },
   "keywords": [
     "deepgram",
@@ -28,7 +30,8 @@
     "directory": "apps/transcription-html"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=24.0.0",
+    "pnpm": ">=10.0.0"
   },
   "browserslist": [
     "defaults",
@@ -36,9 +39,9 @@
     "not op_mini all"
   ],
   "dependencies": {
-    "@deepgram/styles": "latest"
+    "@deepgram/styles": "0.0.9"
   },
   "devDependencies": {
-    "vite": "^7.2.2"
+    "vite": "7.2.2"
   }
 }
