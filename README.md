@@ -47,11 +47,7 @@ pnpm build
 pnpm start
 ```
 
-### 🌐 Open the App
-
-**Always use:** [http://localhost:3000](http://localhost:3000)
-
-⚠️ **Important:** You'll see Vite output showing port 8081 - ignore it! Always use port 3000 for the full app (frontend + API). Port 8081 is just the internal Vite dev server.
+Open [http://localhost:3000](http://localhost:3000)
 
 ## Features
 
