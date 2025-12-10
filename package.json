@@ -2,26 +2,34 @@
   "name": "@deepgram/prerecorded-node-starter",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=10.0.0"
+  },
   "scripts": {
-    "postinstall": "cd frontend && pnpm install",
+    "install:all": "pnpm install && cd frontend && pnpm install && cd ..",
+    "install:frontend": "cd frontend && pnpm install && cd ..",
     "build": "cd frontend && pnpm run build",
     "start": "node --no-deprecation server.js",
     "dev": "npm-run-all --parallel dev:backend dev:frontend",
     "dev:backend": "NODE_ENV=development nodemon --no-deprecation server.js",
-    "dev:frontend": "cd frontend && npm run dev -- --port 5173 --no-open --logLevel error"
+    "dev:frontend": "cd frontend && pnpm run dev -- --no-open --logLevel error",
+    "security-check": "snyk test --severity-threshold=low --package-manager=pnpm --fail-on=all",
+    "security-check:all": "pnpm run security-check && cd frontend && pnpm run security-check && cd .."
   },
   "dependencies": {
-    "@deepgram/sdk": "^4.11.2",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "http-proxy-middleware": "^3.0.3",
-    "multer": "^2.0.2",
-    "npm-run-all": "^4.1.5"
+    "@deepgram/sdk": "4.11.2",
+    "cors": "2.8.5",
+    "dotenv": "17.2.3",
+    "express": "5.2.1",
+    "http-proxy-middleware": "3.0.5",
+    "multer": "2.0.2",
+    "npm-run-all": "4.1.5"
   },
   "devDependencies": {
-    "@flydotio/dockerfile": "^0.7.10",
-    "nodemon": "^3.1.9"
+    "@flydotio/dockerfile": "0.7.10",
+    "nodemon": "3.1.10"
   },
   "browserslist": {
     "production": [

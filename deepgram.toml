@@ -7,8 +7,8 @@ language = "JavaScript"
 framework = "Node"
 
 [pre-build]
-command = "pnpm install"
-message = "Dependencies installed"
+command = "pnpm run install:all"
+message = "Dependencies installed (root + frontend)"
 
 [build]
 command = "pnpm build"

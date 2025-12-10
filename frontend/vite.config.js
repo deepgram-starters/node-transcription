@@ -4,7 +4,7 @@ export default defineConfig({
   root: '.',
   server: {
     port: 8081,
-    open: true,
+    open: false,
     host: true
   },
   preview: {

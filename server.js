@@ -37,7 +37,7 @@ const DEFAULT_MODEL = "nova-3";
 const CONFIG = {
   port: process.env.PORT || 3000,
   host: process.env.HOST || "0.0.0.0",
-  vitePort: process.env.VITE_PORT || 5173,
+  vitePort: process.env.VITE_PORT || 8081,
   isDevelopment: process.env.NODE_ENV === "development",
 };
 
@@ -298,14 +298,17 @@ if (CONFIG.isDevelopment) {
 // ============================================================================
 
 app.listen(CONFIG.port, CONFIG.host, () => {
+  console.log("\n" + "=".repeat(70));
   console.log(
-    `\n🚀 STT Backend Server running at http://${CONFIG.host}:${CONFIG.port}`
+    `🚀 STT Backend Server running at http://localhost:${CONFIG.port}`
   );
   if (CONFIG.isDevelopment) {
     console.log(
-      `📡 Proxying frontend from Vite dev server on port ${CONFIG.vitePort}\n`
+      `📡 Proxying frontend from Vite dev server on port ${CONFIG.vitePort}`
     );
+    console.log(`\n⚠️  Open your browser to http://localhost:${CONFIG.port}`);
   } else {
-    console.log(`📦 Serving built frontend from frontend/dist\n`);
+    console.log(`📦 Serving built frontend from frontend/dist`);
   }
+  console.log("=".repeat(70) + "\n");
 });
