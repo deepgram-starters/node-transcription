@@ -1,6 +1,6 @@
 {
   "name": "@deepgram/transcription-html",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "description": "Minimal HTML starter with Deepgram design system styles",
   "main": "index.html",
