@@ -19,7 +19,7 @@
     "security-check:all": "pnpm run security-check && cd frontend && pnpm run security-check && cd .."
   },
   "dependencies": {
-    "@deepgram/sdk": "4.11.2",
+    "@deepgram/sdk": "5.0.0-beta.2",
     "cors": "2.8.5",
     "dotenv": "17.2.3",
     "express": "5.2.1",
