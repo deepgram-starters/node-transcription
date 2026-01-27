@@ -11,7 +11,16 @@ Speech-to-text demo using Deepgram's API with Node.js backend and web frontend.
 
 ## Quick Start
 
-1. **Install dependencies**
+1. **Clone the repository**
+
+Clone the repository with submodules (the frontend is a shared submodule):
+
+```bash
+git clone --recurse-submodules https://github.com/deepgram-starters/node-transcription.git
+cd node-transcription
+```
+
+2. **Install dependencies**
 
 ```bash
 # Option 1: Use the helper script (recommended)
@@ -24,7 +33,7 @@ cd frontend && pnpm install && cd ..
 
 **Note:** Due to security settings (`ignore-scripts=true`), frontend dependencies must be installed separately. The `install:all` script handles both steps. See [SECURITY.md](SECURITY.md) for details.
 
-2. **Set your API key**
+3. **Set your API key**
 
 Create a `.env` file:
 
@@ -32,7 +41,7 @@ Create a `.env` file:
 DEEPGRAM_API_KEY=your_api_key_here
 ```
 
-3. **Run the app**
+4. **Run the app**
 
 **Development mode** (with hot reload):
 
