@@ -15,7 +15,7 @@ command = "pnpm build"
 message = "Build completed"
 
 [build.config]
-sample = "example.env"
+sample = "sample.env"
 output = ".env"
 
 [post-build]
