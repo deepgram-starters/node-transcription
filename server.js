@@ -35,9 +35,9 @@ const DEFAULT_MODEL = "nova-3";
  * Server configuration - These can be overridden via environment variables
  */
 const CONFIG = {
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 8080,
   host: process.env.HOST || "0.0.0.0",
-  vitePort: process.env.VITE_PORT || 8081,
+  vitePort: process.env.VITE_PORT || 5173,
   isDevelopment: process.env.NODE_ENV === "development",
 };
 
@@ -278,17 +278,21 @@ app.post("/stt/transcribe", upload.single("file"), async (req, res) => {
  * IMPORTANT: This MUST come AFTER your API routes to avoid conflicts
  */
 if (CONFIG.isDevelopment) {
-  // Development: Proxy to Vite dev server
+  console.log(`Development mode: Proxying to Vite dev server on port ${CONFIG.vitePort}`);
+
+  // Proxy all requests (including WebSocket for Vite HMR) to Vite dev server
+  // Note: This app has no backend WebSocket connections, so we can proxy all WebSockets to Vite
   app.use(
     "/",
     createProxyMiddleware({
       target: `http://localhost:${CONFIG.vitePort}`,
       changeOrigin: true,
-      ws: true, // Enable WebSocket proxying for Vite HMR (Hot Module Reload)
+      ws: true, // All WebSockets go to Vite (no backend WebSocket endpoints)
     })
   );
 } else {
-  // Production: Serve static files from frontend/dist
+  console.log('Production mode: Serving static files');
+
   const distPath = path.join(__dirname, "frontend", "dist");
   app.use(express.static(distPath));
 }
