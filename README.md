@@ -81,6 +81,23 @@ This project implements comprehensive supply chain security measures including:
 
 See [SECURITY.md](SECURITY.md) for complete security documentation and reporting procedures.
 
+## Makefile Commands
+
+This project includes a Makefile for framework-agnostic operations:
+
+```bash
+make help              # Show all available commands
+make init              # Initialize submodules and install dependencies
+make dev               # Start development servers
+make build             # Build frontend for production
+make start             # Start production server
+make update            # Update submodules to latest
+make clean             # Remove node_modules and build artifacts
+make status            # Show git and submodule status
+```
+
+Use `make` commands for a consistent experience regardless of package manager.
+
 ## Contributing
 
 Contributions are welcome! Please review:
