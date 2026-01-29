@@ -25,7 +25,8 @@
     "express": "5.2.1",
     "http-proxy-middleware": "3.0.5",
     "multer": "2.0.2",
-    "npm-run-all": "4.1.5"
+    "npm-run-all": "4.1.5",
+    "toml": "3.0.0"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "0.7.10",
