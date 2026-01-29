@@ -37,7 +37,7 @@ const DEFAULT_MODEL = "nova-3";
 const CONFIG = {
   port: process.env.PORT || 8080,
   host: process.env.HOST || "0.0.0.0",
-  vitePort: process.env.VITE_PORT || 5173,
+  vitePort: process.env.VITE_PORT || 8081,
   isDevelopment: process.env.NODE_ENV === "development",
 };
 
@@ -255,6 +255,22 @@ app.post("/stt/transcribe", upload.single("file"), async (req, res) => {
     const errorResponse = formatErrorResponse(err);
     res.status(errorResponse.statusCode).json(errorResponse.body);
   }
+});
+
+/**
+ * GET /api/metadata
+ *
+ * Returns metadata about this starter application
+ * Required for standardization compliance
+ */
+app.get("/api/metadata", (req, res) => {
+  res.json({
+    name: "Node Transcription Starter",
+    feature: "transcription",
+    language: "JavaScript",
+    framework: "Node",
+    version: "1.0.0"
+  });
 });
 
 /**

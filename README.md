@@ -56,7 +56,7 @@ pnpm build
 pnpm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:8080](http://localhost:8080)
 
 ## Features
 

@@ -7,11 +7,11 @@ language = "JavaScript"
 framework = "Node"
 
 [pre-build]
-command = "pnpm run install:all"
+command = "make init"
 message = "Dependencies installed (root + frontend)"
 
 [build]
-command = "pnpm build"
+command = "make build"
 message = "Build completed"
 
 [build.config]
