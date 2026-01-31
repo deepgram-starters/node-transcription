@@ -18,6 +18,10 @@
     "security-check": "snyk test --severity-threshold=low --package-manager=pnpm --fail-on=all",
     "security-check:all": "pnpm run security-check && cd frontend && pnpm run security-check && cd .."
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deepgram-starters/node-transcription.git"
+  },
   "dependencies": {
     "@deepgram/sdk": "4.11.2",
     "cors": "2.8.5",
