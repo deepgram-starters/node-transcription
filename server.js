@@ -37,6 +37,7 @@ const DEFAULT_MODEL = "nova-3";
 const CONFIG = {
   port: process.env.PORT || 8081,
   host: process.env.HOST || "0.0.0.0",
+  frontendPort: process.env.FRONTEND_PORT || 8080,
 };
 
 // ============================================================================
@@ -95,9 +96,12 @@ const upload = multer({ storage: storage });
 // Initialize Express app
 const app = express();
 
-// Enable CORS for frontend (running on port 8080)
+// Enable CORS for frontend
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://127.0.0.1:8080'],
+  origin: [
+    `http://localhost:${CONFIG.frontendPort}`,
+    `http://127.0.0.1:${CONFIG.frontendPort}`
+  ],
   credentials: true
 }));
 
@@ -309,7 +313,7 @@ app.get("/api/metadata", (req, res) => {
 app.listen(CONFIG.port, CONFIG.host, () => {
   console.log("\n" + "=".repeat(70));
   console.log(`🚀 Backend API Server running at http://localhost:${CONFIG.port}`);
-  console.log(`📡 CORS enabled for http://localhost:8080`);
-  console.log(`\n💡 Frontend should be running on http://localhost:8080`);
+  console.log(`📡 CORS enabled for http://localhost:${CONFIG.frontendPort}`);
+  console.log(`\n💡 Frontend should be running on http://localhost:${CONFIG.frontendPort}`);
   console.log("=".repeat(70) + "\n");
 });
