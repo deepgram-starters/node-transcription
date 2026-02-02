@@ -8,6 +8,12 @@ language = "JavaScript"
 framework = "Node"
 sdk = "4.11.2"
 
+# Check prerequisites
+[check]
+command = ["git --version", "node --version", "pnpm --version"]
+message = "All prerequisites installed"
+
+# Install dependencies
 [install.pre]
 command = "git submodule update --init --recursive"
 message = "Submodules initialized"
@@ -16,22 +22,31 @@ message = "Submodules initialized"
 command = ["corepack pnpm install", "cd frontend && corepack pnpm install"]
 message = "Dependencies installed"
 
-[install.config]
-sample = "sample.env"
-output = ".env"
+[install.post]
+command = "test -f .env || cp sample.env .env"
+message = "Environment configuration ready"
 
-[build]
-command = "cd frontend && corepack pnpm build"
-message = "Frontend built"
-
-[dev]
-command = "corepack pnpm dev"
-message = "Development servers started on http://localhost:8080"
+# Start application
+[start.pre]
+command = "test -f .env || (echo '❌ .env not found. Run: cp sample.env .env' && exit 1)"
+message = "Environment validated"
 
 [start]
-command = "corepack pnpm start"
-message = "Production server started on http://localhost:8080"
+command = ["node server.js", "cd frontend && pnpm run dev -- --port 8080 --no-open"]
+parallel = true
+message = "Application running on http://localhost:8080"
 
+# Update submodules
+[update]
+command = "git submodule update --remote --merge"
+message = "Submodules updated"
+
+# Clean artifacts
 [clean]
-command = ["rm -rf node_modules", "rm -rf frontend/node_modules", "rm -rf frontend/dist"]
+command = ["rm -rf node_modules", "rm -rf frontend/node_modules", "rm -rf frontend/.vite"]
 message = "Build artifacts cleaned"
+
+# Testing
+[test]
+command = ["echo 'No tests configured'", "cd frontend && pnpm test"]
+message = "Tests complete"

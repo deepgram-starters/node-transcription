@@ -11,52 +11,72 @@ Speech-to-text demo using Deepgram's API with Node.js backend and web frontend.
 
 ## Quick Start
 
-1. **Clone the repository**
-
-Clone the repository with submodules (the frontend is a shared submodule):
-
+<!--
+**Recommended: Using Deepgram CLI**
 ```bash
-git clone --recurse-submodules https://github.com/deepgram-starters/node-transcription.git
-cd node-transcription
+dg check      # Verify prerequisites
+dg install    # Initialize and install dependencies
+dg start      # Run the application
+```
+-->
+
+**Using Make**
+```bash
+make check-prereqs
+make init
+cp sample.env .env  # Add your DEEPGRAM_API_KEY
+make start
 ```
 
-2. **Install dependencies**
+Open [http://localhost:8080](http://localhost:8080) in your browser
 
-```bash
-# Option 1: Use the helper script (recommended)
-pnpm run install:all
+<details>
+<summary>Alternative: Manual Setup</summary>
 
-# Option 2: Manual two-step install
-pnpm install
-cd frontend && pnpm install && cd ..
-```
+1. **Clone with submodules**
+   ```bash
+   git clone --recurse-submodules https://github.com/deepgram-starters/node-transcription.git
+   cd node-transcription
+   ```
 
-**Note:** Due to security settings (`ignore-scripts=true`), frontend dependencies must be installed separately. The `install:all` script handles both steps. See [SECURITY.md](SECURITY.md) for details.
+2. **Check prerequisites**
+   ```bash
+   git --version
+   node --version  # Requires 24+
+   pnpm --version  # Requires 10+
+   ```
 
-3. **Set your API key**
+3. **Initialize submodules**
+   ```bash
+   git submodule update --init --recursive
+   ```
 
-Create a `.env` file:
+4. **Install dependencies**
+   ```bash
+   pnpm install
+   cd frontend && pnpm install
+   ```
 
-```bash
-DEEPGRAM_API_KEY=your_api_key_here
-```
+5. **Configure environment**
+   ```bash
+   cp sample.env .env
+   # Edit .env and add your DEEPGRAM_API_KEY
+   ```
 
-4. **Run the app**
+6. **Start servers** (in separate terminals)
+   ```bash
+   # Terminal 1 - Backend
+   pnpm start
 
-**Development mode** (with hot reload):
+   # Terminal 2 - Frontend
+   cd frontend && pnpm run dev -- --port 8080
+   ```
 
-```bash
-pnpm dev
-```
+7. **Open your browser**
 
-**Production mode** (build and serve):
+   Visit [http://localhost:8080](http://localhost:8080)
 
-```bash
-pnpm build
-pnpm start
-```
-
-Open [http://localhost:8080](http://localhost:8080)
+</details>
 
 ## Features
 
@@ -64,6 +84,12 @@ Open [http://localhost:8080](http://localhost:8080)
 - Multiple model options
 - View transcription history
 - Responsive web interface
+
+## Architecture
+
+- **Frontend** runs on port **8080** (user-facing)
+- **Backend API** runs on port **8081**
+- Frontend makes CORS requests to backend
 
 ## How It Works
 
@@ -81,22 +107,23 @@ This project implements comprehensive supply chain security measures including:
 
 See [SECURITY.md](SECURITY.md) for complete security documentation and reporting procedures.
 
-## Makefile Commands
+## Available Commands
 
 This project includes a Makefile for framework-agnostic operations:
 
 ```bash
-make help              # Show all available commands
-make init              # Initialize submodules and install dependencies
-make dev               # Start development servers
-make build             # Build frontend for production
-make start             # Start production server
-make update            # Update submodules to latest
-make clean             # Remove node_modules and build artifacts
-make status            # Show git and submodule status
+make help                # Show all available commands
+make check-prereqs       # Check for required tools
+make init                # Initialize submodules and install dependencies
+make start               # Start application (backend + frontend)
+make start-backend       # Start backend only (port 8081)
+make start-frontend      # Start frontend only (port 8080)
+make update              # Update submodules to latest
+make clean               # Remove node_modules and build artifacts
+make status              # Show git and submodule status
 ```
 
-Use `make` commands for a consistent experience regardless of package manager.
+Use `make` commands for a consistent cross-platform experience.
 
 ## Contributing
 

@@ -8,14 +8,14 @@
  * Key Features:
  * - Single API endpoint: POST /stt/transcribe
  * - Accepts both file uploads and URLs
- * - Proxies to Vite dev server in development
- * - Serves static frontend in production
+ * - CORS enabled for frontend communication
+ * - Pure API server (frontend served separately)
  */
 
 require("dotenv").config();
 
 const { createClient } = require("@deepgram/sdk");
-const { createProxyMiddleware } = require("http-proxy-middleware");
+const cors = require("cors");
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
@@ -35,10 +35,8 @@ const DEFAULT_MODEL = "nova-3";
  * Server configuration - These can be overridden via environment variables
  */
 const CONFIG = {
-  port: process.env.PORT || 8080,
+  port: process.env.PORT || 8081,
   host: process.env.HOST || "0.0.0.0",
-  vitePort: process.env.VITE_PORT || 8081,
-  isDevelopment: process.env.NODE_ENV === "development",
 };
 
 // ============================================================================
@@ -96,6 +94,12 @@ const upload = multer({ storage: storage });
 
 // Initialize Express app
 const app = express();
+
+// Enable CORS for frontend (running on port 8080)
+app.use(cors({
+  origin: ['http://localhost:8080', 'http://127.0.0.1:8080'],
+  credentials: true
+}));
 
 // ============================================================================
 // HELPER FUNCTIONS - Modular logic for easier understanding and testing
@@ -299,51 +303,13 @@ app.get("/api/metadata", (req, res) => {
  */
 
 // ============================================================================
-// FRONTEND SERVING - Development proxy or production static files
-// ============================================================================
-
-/**
- * In development: Proxy all requests to Vite dev server for hot reload
- * In production: Serve pre-built static files from frontend/dist
- *
- * IMPORTANT: This MUST come AFTER your API routes to avoid conflicts
- */
-if (CONFIG.isDevelopment) {
-  console.log(`Development mode: Proxying to Vite dev server on port ${CONFIG.vitePort}`);
-
-  // Proxy all requests (including WebSocket for Vite HMR) to Vite dev server
-  // Note: This app has no backend WebSocket connections, so we can proxy all WebSockets to Vite
-  app.use(
-    "/",
-    createProxyMiddleware({
-      target: `http://localhost:${CONFIG.vitePort}`,
-      changeOrigin: true,
-      ws: true, // All WebSockets go to Vite (no backend WebSocket endpoints)
-    })
-  );
-} else {
-  console.log('Production mode: Serving static files');
-
-  const distPath = path.join(__dirname, "frontend", "dist");
-  app.use(express.static(distPath));
-}
-
-// ============================================================================
 // SERVER START
 // ============================================================================
 
 app.listen(CONFIG.port, CONFIG.host, () => {
   console.log("\n" + "=".repeat(70));
-  console.log(
-    `🚀 STT Backend Server running at http://localhost:${CONFIG.port}`
-  );
-  if (CONFIG.isDevelopment) {
-    console.log(
-      `📡 Proxying frontend from Vite dev server on port ${CONFIG.vitePort}`
-    );
-    console.log(`\n⚠️  Open your browser to http://localhost:${CONFIG.port}`);
-  } else {
-    console.log(`📦 Serving built frontend from frontend/dist`);
-  }
+  console.log(`🚀 Backend API Server running at http://localhost:${CONFIG.port}`);
+  console.log(`📡 CORS enabled for http://localhost:8080`);
+  console.log(`\n💡 Frontend should be running on http://localhost:8080`);
   console.log("=".repeat(70) + "\n");
 });

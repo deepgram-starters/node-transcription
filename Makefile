@@ -1,25 +1,26 @@
-# Transcription Makefile
+# Node Transcription Makefile
 # Framework-agnostic commands for managing the project and git submodules
 
 # Use corepack to ensure correct pnpm version
 PNPM := corepack pnpm
 
-.PHONY: help init install install-frontend build dev start clean
+.PHONY: help check-prereqs init install-backend install-frontend start-backend start-frontend start update clean status
 
 # Default target: show help
 help:
-	@echo "Transcription - Available Commands"
-	@echo "==================================="
+	@echo "Node Transcription - Available Commands"
+	@echo "========================================"
 	@echo ""
 	@echo "Setup:"
+	@echo "  make check-prereqs     Check for required tools (git, node, pnpm)"
 	@echo "  make init              Initialize submodules and install all dependencies"
-	@echo "  make install           Install backend dependencies only"
+	@echo "  make install-backend   Install backend dependencies only"
 	@echo "  make install-frontend  Install frontend dependencies only"
 	@echo ""
 	@echo "Development:"
-	@echo "  make dev               Start development servers (backend + frontend)"
-	@echo "  make start             Start production server"
-	@echo "  make build             Build frontend for production"
+	@echo "  make start             Start application (backend + frontend)"
+	@echo "  make start-backend     Start backend only (port 8081)"
+	@echo "  make start-frontend    Start frontend only (port 8080)"
 	@echo ""
 	@echo "Maintenance:"
 	@echo "  make update            Update submodules to latest commits"
@@ -27,8 +28,17 @@ help:
 	@echo "  make status            Show git and submodule status"
 	@echo ""
 
+# Check for required prerequisites
+check-prereqs:
+	@echo "==> Checking prerequisites..."
+	@command -v git >/dev/null 2>&1 || { echo "❌ git is required but not installed. Visit https://git-scm.com"; exit 1; }
+	@command -v node >/dev/null 2>&1 || { echo "❌ node is required but not installed. Visit https://nodejs.org"; exit 1; }
+	@command -v pnpm >/dev/null 2>&1 || { echo "⚠️  pnpm not found. Run: corepack enable"; exit 1; }
+	@echo "✓ All prerequisites installed"
+	@echo ""
+
 # Initialize project: clone submodules and install dependencies
-init:
+init: check-prereqs
 	@echo "==> Initializing submodules..."
 	git submodule update --init --recursive
 	@echo ""
@@ -42,11 +52,11 @@ init:
 	@echo ""
 	@echo "Next steps:"
 	@echo "  1. Copy sample.env to .env and add your DEEPGRAM_API_KEY"
-	@echo "  2. Run 'make dev' to start development servers"
+	@echo "  2. Run 'make start' to start the application"
 	@echo ""
 
 # Install backend dependencies
-install:
+install-backend:
 	@echo "==> Installing backend dependencies..."
 	$(PNPM) install
 
@@ -54,46 +64,44 @@ install:
 install-frontend:
 	@echo "==> Installing frontend dependencies..."
 	@if [ ! -d "frontend" ] || [ -z "$$(ls -A frontend)" ]; then \
-		echo "Error: Frontend submodule not initialized. Run 'make init' first."; \
+		echo "❌ Error: Frontend submodule not initialized. Run 'make init' first."; \
 		exit 1; \
 	fi
 	cd frontend && $(PNPM) install
 
-# Build frontend for production
-build:
-	@echo "==> Building frontend..."
-	@if [ ! -d "frontend" ] || [ -z "$$(ls -A frontend)" ]; then \
-		echo "Error: Frontend submodule not initialized. Run 'make init' first."; \
-		exit 1; \
-	fi
-	cd frontend && $(PNPM) build
-	@echo "✓ Frontend built to frontend/dist/"
-
-# Start development servers (backend + frontend with hot reload)
-dev:
-	@echo "==> Starting development servers..."
+# Start backend server (port 8081)
+start-backend:
 	@if [ ! -f ".env" ]; then \
-		echo "Error: .env file not found. Copy sample.env to .env and add your DEEPGRAM_API_KEY"; \
+		echo "❌ Error: .env file not found. Copy sample.env to .env and add your DEEPGRAM_API_KEY"; \
 		exit 1; \
 	fi
-	@if [ ! -d "frontend" ] || [ -z "$$(ls -A frontend)" ]; then \
-		echo "Error: Frontend submodule not initialized. Run 'make init' first."; \
-		exit 1; \
-	fi
-	$(PNPM) dev
+	@echo "==> Starting backend on http://localhost:8081"
+	$(PNPM) run start-backend
 
-# Start production server (requires build)
+# Start frontend dev server (port 8080)
+start-frontend:
+	@if [ ! -d "frontend" ] || [ -z "$$(ls -A frontend)" ]; then \
+		echo "❌ Error: Frontend submodule not initialized. Run 'make init' first."; \
+		exit 1; \
+	fi
+	@echo "==> Starting frontend on http://localhost:8080"
+	cd frontend && $(PNPM) run dev -- --port 8080 --no-open
+
+# Start application (backend + frontend in parallel)
 start:
-	@echo "==> Starting production server..."
 	@if [ ! -f ".env" ]; then \
-		echo "Error: .env file not found. Copy sample.env to .env and add your DEEPGRAM_API_KEY"; \
+		echo "❌ Error: .env file not found. Copy sample.env to .env and add your DEEPGRAM_API_KEY"; \
 		exit 1; \
 	fi
-	@if [ ! -d "frontend/dist" ]; then \
-		echo "Error: Frontend not built. Run 'make build' first."; \
+	@if [ ! -d "frontend" ] || [ -z "$$(ls -A frontend)" ]; then \
+		echo "❌ Error: Frontend submodule not initialized. Run 'make init' first."; \
 		exit 1; \
 	fi
-	$(PNPM) start
+	@echo "==> Starting application..."
+	@echo "    Backend:  http://localhost:8081"
+	@echo "    Frontend: http://localhost:8080"
+	@echo ""
+	@$(MAKE) start-backend & $(MAKE) start-frontend & wait
 
 # Update submodules to latest commits
 update:
@@ -106,7 +114,7 @@ clean:
 	@echo "==> Cleaning node_modules and build artifacts..."
 	rm -rf node_modules
 	rm -rf frontend/node_modules
-	rm -rf frontend/dist
+	rm -rf frontend/.vite
 	@echo "✓ Cleaned successfully"
 
 # Show git and submodule status
