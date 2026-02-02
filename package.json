@@ -1,7 +1,9 @@
 {
-  "name": "@deepgram/prerecorded-node-starter",
-  "version": "0.0.1",
+  "name": "@deepgram/node-transcription",
+  "version": "1.0.0",
   "private": true,
+  "description": "Prerecorded audio transcription using Deepgram",
+  "main": "server.js",
   "packageManager": "pnpm@10.0.0",
   "engines": {
     "node": ">=24.0.0",
@@ -20,8 +22,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/deepgram-starters/node-transcription.git"
+    "url": "git+https://github.com/deepgram-starters/node-transcription.git"
   },
+  "keywords": [
+    "speech-to-text",
+    "deepgram",
+    "transcription",
+    "audio-transcription"
+  ],
+  "author": "Deepgram DX Team <devrel@deepgram.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/deepgram-starters/node-transcription/issues"
+  },
+  "homepage": "https://github.com/deepgram-starters/node-transcription#readme",
   "dependencies": {
     "@deepgram/sdk": "4.11.2",
     "cors": "2.8.5",
@@ -33,7 +47,6 @@
     "toml": "3.0.0"
   },
   "devDependencies": {
-    "@flydotio/dockerfile": "0.7.10",
     "nodemon": "3.1.10"
   },
   "browserslist": {

@@ -1,23 +1,37 @@
 [meta]
-title = "Node Transcription Starter"
+title = "Node Transcription"
 description = "Get started using Deepgram's Transcription with this Node demo app"
 author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
 repository = "https://github.com/deepgram-starters/node-transcription"
-useCase = "STT"
+useCase = "transcription"
 language = "JavaScript"
 framework = "Node"
+sdk = "4.11.2"
 
-[pre-build]
-command = "make init"
-message = "Dependencies installed (root + frontend)"
+[install.pre]
+command = "git submodule update --init --recursive"
+message = "Submodules initialized"
 
-[build]
-command = "make build"
-message = "Build completed"
+[install]
+command = ["corepack pnpm install", "cd frontend && corepack pnpm install"]
+message = "Dependencies installed"
 
-[build.config]
+[install.config]
 sample = "sample.env"
 output = ".env"
 
-[post-build]
-message = "Run `pnpm start` to get up and running."
+[build]
+command = "cd frontend && corepack pnpm build"
+message = "Frontend built"
+
+[dev]
+command = "corepack pnpm dev"
+message = "Development servers started on http://localhost:8080"
+
+[start]
+command = "corepack pnpm start"
+message = "Production server started on http://localhost:8080"
+
+[clean]
+command = ["rm -rf node_modules", "rm -rf frontend/node_modules", "rm -rf frontend/dist"]
+message = "Build artifacts cleaned"
