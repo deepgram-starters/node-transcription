@@ -4,7 +4,7 @@
 # Use corepack to ensure correct pnpm version
 PNPM := corepack pnpm
 
-.PHONY: help check-prereqs init install-backend install-frontend start-backend start-frontend start update clean status
+.PHONY: help check check-prereqs install init install-backend install-frontend start-backend start-frontend start update clean status
 
 # Default target: show help
 help:
@@ -37,6 +37,9 @@ check-prereqs:
 	@echo "✓ All prerequisites installed"
 	@echo ""
 
+# Alias for check-prereqs (standard naming)
+check: check-prereqs
+
 # Initialize project: clone submodules and install dependencies
 init: check-prereqs
 	@echo "==> Initializing submodules..."
@@ -54,6 +57,9 @@ init: check-prereqs
 	@echo "  1. Copy sample.env to .env and add your DEEPGRAM_API_KEY"
 	@echo "  2. Run 'make start' to start the application"
 	@echo ""
+
+# Alias for init (standard naming)
+install: init
 
 # Install backend dependencies
 install-backend:
