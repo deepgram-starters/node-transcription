@@ -4,9 +4,10 @@ description = "Get started using Deepgram's Transcription with this Node demo ap
 author = "Deepgram DX Team <devrel@deepgram.com> (https://developers.deepgram.com)"
 repository = "https://github.com/deepgram-starters/node-transcription"
 useCase = "transcription"
-language = "JavaScript"
-framework = "Node"
+language = "javascript"
+framework = "node"
 sdk = "4.11.2"
+tags = ["transcription", "stt", "speech-to-text", "asr", "pre-recorded", "javascript", "node"]
 
 # Check prerequisites
 [check]
