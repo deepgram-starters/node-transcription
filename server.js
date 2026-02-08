@@ -6,7 +6,7 @@
  * modified and extended for your own projects.
  *
  * Key Features:
- * - Single API endpoint: POST /stt/transcribe
+ * - Single API endpoint: POST /api/transcription
  * - Accepts both file uploads and URLs
  * - CORS enabled for frontend communication
  * - Pure API server (frontend served separately)
@@ -37,7 +37,6 @@ const DEFAULT_MODEL = "nova-3";
 const CONFIG = {
   port: process.env.PORT || 8081,
   host: process.env.HOST || "0.0.0.0",
-  frontendPort: process.env.FRONTEND_PORT || 8080,
 };
 
 // ============================================================================
@@ -96,14 +95,8 @@ const upload = multer({ storage: storage });
 // Initialize Express app
 const app = express();
 
-// Enable CORS for frontend
-app.use(cors({
-  origin: [
-    `http://localhost:${CONFIG.frontendPort}`,
-    `http://127.0.0.1:${CONFIG.frontendPort}`
-  ],
-  credentials: true
-}));
+// Enable CORS (wildcard is safe -- same-origin via Vite proxy / Caddy in production)
+app.use(cors());
 
 // ============================================================================
 // HELPER FUNCTIONS - Modular logic for easier understanding and testing
@@ -214,7 +207,7 @@ function formatErrorResponse(error, statusCode = 500) {
 // ============================================================================
 
 /**
- * POST /stt/transcribe
+ * POST /api/transcription
  *
  * Main transcription endpoint. Accepts either:
  * - A file upload (multipart/form-data with 'file' field)
@@ -229,7 +222,7 @@ function formatErrorResponse(error, statusCode = 500) {
  * - Modify formatTranscriptionResponse() to include/exclude different fields
  * - Add authentication middleware here if you want to protect this endpoint
  */
-app.post("/stt/transcribe", upload.single("file"), async (req, res) => {
+app.post("/api/transcription", upload.single("file"), async (req, res) => {
   try {
     const { body, file } = req;
     const { url, model } = body;
@@ -312,8 +305,8 @@ app.get("/api/metadata", (req, res) => {
 
 app.listen(CONFIG.port, CONFIG.host, () => {
   console.log("\n" + "=".repeat(70));
-  console.log(`🚀 Backend API Server running at http://localhost:${CONFIG.port}`);
-  console.log(`📡 CORS enabled for http://localhost:${CONFIG.frontendPort}`);
-  console.log(`\n💡 Frontend should be running on http://localhost:${CONFIG.frontendPort}`);
+  console.log(`🚀 Backend API running at http://localhost:${CONFIG.port}`);
+  console.log(`📡 POST /api/transcription`);
+  console.log(`📡 GET  /api/metadata`);
   console.log("=".repeat(70) + "\n");
 });
