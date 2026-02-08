@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@deepgram/sdk':
-        specifier: 4.11.2
-        version: 4.11.2
+        specifier: 4.11.3
+        version: 4.11.3
       cors:
         specifier: 2.8.5
         version: 2.8.5
@@ -37,8 +37,8 @@ packages:
     resolution: {integrity: sha512-8B1C/oTxTxyHlSFubAhNRgCbQ2SQ5wwvtlByn8sDYZvdDtdn/VE2yEPZ4BvUnrKWmsbTQY6/ooLV+9Ka2qmDSQ==}
     engines: {node: '>=18.0.0'}
 
-  '@deepgram/sdk@4.11.2':
-    resolution: {integrity: sha512-lKGxuXxlSixC8bB0BnzmIpbVjUSgYtz17cqvrgv0ZjmazgUPkuUj9egQPj6k+fbPX8wRzWEqlhrL/DXlXqeDXA==}
+  '@deepgram/sdk@4.11.3':
+    resolution: {integrity: sha512-7NujHlAX6ciBeYAkxkhE7LCZWy0JK3nvFsV2VwVZIUiFR40ykhep5fxYd7ZovM+PbNyCoM8GKNMHu9MeQ5/wTQ==}
     engines: {node: '>=18.0.0'}
 
   '@types/node@18.19.130':
@@ -539,7 +539,7 @@ snapshots:
     dependencies:
       dayjs: 1.11.19
 
-  '@deepgram/sdk@4.11.2':
+  '@deepgram/sdk@4.11.3':
     dependencies:
       '@deepgram/captions': 1.2.0
       '@types/node': 18.19.130

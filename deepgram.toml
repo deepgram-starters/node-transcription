@@ -6,7 +6,7 @@ repository = "https://github.com/deepgram-starters/node-transcription"
 useCase = "transcription"
 language = "javascript"
 framework = "node"
-sdk = "4.11.2"
+sdk = "4.11.3"
 tags = ["transcription", "stt", "speech-to-text", "asr", "pre-recorded", "javascript", "node"]
 
 # Check prerequisites
