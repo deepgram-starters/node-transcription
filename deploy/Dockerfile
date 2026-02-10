@@ -1,5 +1,5 @@
 # Stage 1: Build custom Caddy with rate limiting module
-FROM golang:1.23-alpine AS caddy-builder
+FROM golang:1.25-alpine AS caddy-builder
 WORKDIR /build
 RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 RUN xcaddy build --with github.com/mholt/caddy-ratelimit
