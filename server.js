@@ -9,7 +9,7 @@
  * - Single API endpoint: POST /api/transcription
  * - Accepts both file uploads and URLs
  * - CORS enabled for frontend communication
- * - JWT session auth with page nonce (production only)
+ * - JWT session auth with rate limiting (production only)
  * - Pure API server (frontend served separately)
  */
 
@@ -44,26 +44,17 @@ const CONFIG = {
 };
 
 // ============================================================================
-// SESSION AUTH - JWT tokens with page nonce for production security
+// SESSION AUTH - JWT tokens for production security
 // ============================================================================
 
 /**
- * Session secret for signing JWTs. When set (production/Fly.io), nonce
- * validation is enforced. When unset (local dev), tokens are issued freely.
+ * Session secret for signing JWTs.
  */
 const SESSION_SECRET =
   process.env.SESSION_SECRET || crypto.randomBytes(32).toString("hex");
-const REQUIRE_NONCE = !!process.env.SESSION_SECRET;
 
 /** JWT expiry time (1 hour) */
 const JWT_EXPIRY = "1h";
-
-/** Tracks consumed nonces to prevent replay (Caddy generates nonces via request UUID) */
-const usedNonces = new Set();
-
-/** Clear used nonces hourly (JWTs expire hourly, so old nonces are irrelevant) */
-setInterval(() => usedNonces.clear(), 60 * 60 * 1000);
-
 
 /**
  * Express middleware that validates JWT from Authorization header.
@@ -267,28 +258,14 @@ function formatErrorResponse(error, statusCode = 500) {
 // ============================================================================
 
 /**
- * GET /api/session — Issues a JWT. In production (SESSION_SECRET set),
- * requires a single-use nonce via X-Session-Nonce header.
- * Caddy injects a unique request UUID as the nonce in the HTML page.
+ * GET /api/session — Issues a signed JWT for session authentication.
  */
 app.get("/api/session", (req, res) => {
-  if (REQUIRE_NONCE) {
-    const nonce = req.headers["x-session-nonce"];
-    if (!nonce || usedNonces.has(nonce)) {
-      return res.status(403).json({
-        error: {
-          type: "AuthenticationError",
-          code: "INVALID_NONCE",
-          message: "Valid session nonce required. Please refresh the page.",
-        },
-      });
-    }
-    usedNonces.add(nonce);
-  }
-
-  const token = jwt.sign({ iat: Math.floor(Date.now() / 1000) }, SESSION_SECRET, {
-    expiresIn: JWT_EXPIRY,
-  });
+  const token = jwt.sign(
+    { iat: Math.floor(Date.now() / 1000) },
+    SESSION_SECRET,
+    { expiresIn: JWT_EXPIRY }
+  );
   res.json({ token });
 });
 
@@ -391,7 +368,7 @@ app.get("/api/metadata", (req, res) => {
 app.listen(CONFIG.port, CONFIG.host, () => {
   console.log("\n" + "=".repeat(70));
   console.log(`🚀 Backend API running at http://localhost:${CONFIG.port}`);
-  console.log(`📡 GET  /api/session${REQUIRE_NONCE ? " (nonce required)" : ""}`);
+  console.log(`📡 GET  /api/session`);
   console.log(`📡 POST /api/transcription (auth required)`);
   console.log(`📡 GET  /api/metadata`);
   console.log("=".repeat(70) + "\n");
