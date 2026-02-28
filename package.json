@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/deepgram-starters/node-transcription#readme",
   "dependencies": {
-    "@deepgram/sdk": "4.11.3",
+    "@deepgram/sdk": "5.0.0-beta.4",
     "cors": "2.8.5",
     "dotenv": "17.2.3",
     "express": "5.2.1",
