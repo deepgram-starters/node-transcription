@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@deepgram/sdk':
-        specifier: 5.0.0-beta.4
-        version: 5.0.0-beta.4
+        specifier: 5.0.0
+        version: 5.0.0
       cors:
         specifier: 2.8.5
         version: 2.8.5
@@ -36,8 +36,8 @@ importers:
 
 packages:
 
-  '@deepgram/sdk@5.0.0-beta.4':
-    resolution: {integrity: sha512-i1Vb5h9W06UHlYVsGaOMIC4kQIil5z/SfzrsUQVUU0UYAuyf5QbcCgtdf+mkElb+aVYokP0Qt0avWYFTfVVmAw==}
+  '@deepgram/sdk@5.0.0':
+    resolution: {integrity: sha512-x1wMiOgDGqcLEaQpQBQLTtk5mLbXbYgcBEpp7cfJIyEtqdIGgijCZH+a/esiVp+xIcTYYroTxG47RVppZOHbWw==}
     engines: {node: '>=18.0.0'}
 
   accepts@2.0.0:
@@ -533,7 +533,7 @@ packages:
 
 snapshots:
 
-  '@deepgram/sdk@5.0.0-beta.4':
+  '@deepgram/sdk@5.0.0':
     dependencies:
       ws: 8.18.3
     transitivePeerDependencies:
