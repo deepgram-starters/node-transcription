@@ -9,23 +9,15 @@ framework = "node"
 sdk = "4.11.3"
 tags = ["transcription", "stt", "speech-to-text", "asr", "pre-recorded", "javascript", "node"]
 
-# Check prerequisites
+# Check prerequisites (run via `make check-prereqs`)
 [check]
-command = ["git --version", "node --version", "pnpm --version"]
-message = "All prerequisites installed"
+command = "make check-prereqs"
+message = "All prerequisites met"
 
-# Install dependencies
-[install.pre]
-command = "git submodule update --init --recursive"
-message = "Submodules initialized"
-
+# Install dependencies (run via `make init`)
 [install]
-command = ["corepack pnpm install", "cd frontend && corepack pnpm install"]
-message = "Dependencies installed"
-
-[install.post]
-command = "test -f .env || cp sample.env .env"
-message = "Environment configuration ready"
+command = "make init"
+message = "Project initialized"
 
 # Start application
 [start.pre]
