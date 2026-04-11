@@ -32,10 +32,39 @@ help:
 # Check for required prerequisites
 check-prereqs:
 	@echo "==> Checking prerequisites..."
-	@command -v git >/dev/null 2>&1 || { echo "❌ git is required but not installed. Visit https://git-scm.com"; exit 1; }
-	@command -v node >/dev/null 2>&1 || { echo "❌ node is required but not installed. Visit https://nodejs.org"; exit 1; }
-	@command -v pnpm >/dev/null 2>&1 || { echo "⚠️  pnpm not found. Run: corepack enable"; exit 1; }
-	@echo "✓ All prerequisites installed"
+	@command -v git >/dev/null 2>&1 \
+		|| { echo "❌ git is required but not installed."; \
+		     echo "   Install: https://git-scm.com/downloads"; exit 1; }
+	@command -v node >/dev/null 2>&1 \
+		|| { echo "❌ node is required but not installed."; \
+		     echo "   Install: https://nodejs.org"; exit 1; }
+	@command -v npm >/dev/null 2>&1 \
+		|| { echo "❌ npm is required but not installed."; \
+		     echo "   npm is bundled with Node.js — reinstall from https://nodejs.org"; exit 1; }
+	@command -v make >/dev/null 2>&1 \
+		|| { echo "❌ make is required but not installed."; \
+		     echo "   macOS:  xcode-select --install"; \
+		     echo "   Linux:  sudo apt-get install make"; \
+		     echo "   Windows: https://gnuwin32.sourceforge.net/packages/make.htm"; exit 1; }
+	@command -v curl >/dev/null 2>&1 \
+		|| { echo "❌ curl is required but not installed."; \
+		     echo "   macOS:  brew install curl"; \
+		     echo "   Linux:  sudo apt-get install curl"; exit 1; }
+	@command -v corepack >/dev/null 2>&1 \
+		|| { echo "⚠️  corepack not found — enabling via npm..."; \
+		     npm install -g corepack \
+		     || { echo "❌ Failed to install corepack. Run: npm install -g corepack"; exit 1; }; }
+	@corepack enable pnpm 2>/dev/null || true
+	@command -v pnpm >/dev/null 2>&1 \
+		|| { echo "❌ pnpm not available after corepack enable."; \
+		     echo "   Run: corepack enable pnpm"; exit 1; }
+	@echo "  git:   $$(git --version)"
+	@echo "  node:  $$(node --version)"
+	@echo "  npm:   v$$(npm --version)"
+	@echo "  pnpm:  v$$(pnpm --version)"
+	@echo "  curl:  $$(curl --version | head -1 | cut -d' ' -f1-2)"
+	@echo ""
+	@echo "✓ All prerequisites met"
 	@echo ""
 
 # Alias for check-prereqs (standard naming)
@@ -43,20 +72,44 @@ check: check-prereqs
 
 # Initialize project: clone submodules and install dependencies
 init: check-prereqs
-	@echo "==> Initializing submodules..."
-	git submodule update --init --recursive
+	@echo "==> Initializing git submodules..."
+	git submodule update --init --recursive \
+		|| { echo ""; \
+		     echo "❌ Submodule init failed."; \
+		     echo "   Make sure you cloned the full repository (not downloaded a ZIP)."; \
+		     echo "   If using SSH, ensure your SSH key is added to GitHub."; \
+		     exit 1; }
 	@echo ""
 	@echo "==> Installing backend dependencies..."
-	$(PNPM) install
+	$(PNPM) install \
+		|| { echo ""; \
+		     echo "❌ Backend install failed."; \
+		     echo "   Try: corepack enable pnpm && pnpm install"; \
+		     exit 1; }
 	@echo ""
 	@echo "==> Installing frontend dependencies..."
-	cd frontend && $(PNPM) install
+	cd frontend && $(PNPM) install \
+		|| { echo ""; \
+		     echo "❌ Frontend install failed."; \
+		     echo "   Make sure the frontend submodule is initialized: git submodule update --init"; \
+		     exit 1; }
 	@echo ""
+	@if [ ! -f ".env" ]; then \
+		echo "==> Creating .env from sample.env..."; \
+		cp sample.env .env; \
+		echo "  ⚠️  Add your DEEPGRAM_API_KEY to .env before starting"; \
+		echo ""; \
+	fi
 	@echo "✓ Project initialized successfully!"
 	@echo ""
 	@echo "Next steps:"
-	@echo "  1. Copy sample.env to .env and add your DEEPGRAM_API_KEY"
-	@echo "  2. Run 'make start' to start the application"
+	@if [ ! -f ".env" ] || grep -q 'DEEPGRAM_API_KEY=$$' .env 2>/dev/null; then \
+		echo "  1. Add your DEEPGRAM_API_KEY to .env"; \
+		echo "     Get one free at: https://console.deepgram.com"; \
+		echo "  2. Run 'make start' to start the application"; \
+	else \
+		echo "  1. Run 'make start' to start the application"; \
+	fi
 	@echo ""
 
 # Alias for init (standard naming)
