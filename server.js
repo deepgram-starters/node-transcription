@@ -189,11 +189,13 @@ async function transcribeAudio(dgRequest, model = DEFAULT_MODEL) {
     });
   }
 
-  // File transcription
-  return await deepgram.listen.v1.media.transcribeFile(dgRequest.buffer, {
-    model,
-    mimetype: dgRequest.mimetype,
-  });
+  // File transcription. The uploaded file's MIME type must travel on the
+  // uploadable (Content-Type header) — the request-options object has no
+  // `mimetype` field in v5, so passing it there would be silently dropped.
+  return await deepgram.listen.v1.media.transcribeFile(
+    { data: dgRequest.buffer, contentType: dgRequest.mimetype },
+    { model }
+  );
 }
 
 /**
