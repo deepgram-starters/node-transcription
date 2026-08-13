@@ -15,7 +15,7 @@
 
 require("dotenv").config();
 
-const { createClient } = require("@deepgram/sdk");
+const { DeepgramClient } = require("@deepgram/sdk");
 const cors = require("cors");
 const crypto = require("crypto");
 const express = require("express");
@@ -137,7 +137,7 @@ const apiKey = loadApiKey();
 // ============================================================================
 
 // Initialize Deepgram client
-const deepgram = createClient(apiKey);
+const deepgram = new DeepgramClient({ apiKey });
 
 // Configure Multer for file uploads (stores files in memory)
 const storage = multer.memoryStorage();
@@ -183,17 +183,19 @@ function validateTranscriptionInput(file, url) {
 async function transcribeAudio(dgRequest, model = DEFAULT_MODEL) {
   // URL transcription
   if (dgRequest.url) {
-    return await deepgram.listen.prerecorded.transcribeUrl(
-      { url: dgRequest.url },
-      { model }
-    );
+    return await deepgram.listen.v1.media.transcribeUrl({
+      url: dgRequest.url,
+      model,
+    });
   }
 
-  // File transcription
-  return await deepgram.listen.prerecorded.transcribeFile(dgRequest.buffer, {
-    model,
-    mimetype: dgRequest.mimetype,
-  });
+  // File transcription. The uploaded file's MIME type must travel on the
+  // uploadable (Content-Type header) — the request-options object has no
+  // `mimetype` field in v5, so passing it there would be silently dropped.
+  return await deepgram.listen.v1.media.transcribeFile(
+    { data: dgRequest.buffer, contentType: dgRequest.mimetype },
+    { model }
+  );
 }
 
 /**
@@ -205,7 +207,8 @@ async function transcribeAudio(dgRequest, model = DEFAULT_MODEL) {
  * @returns {Object} - Formatted response object
  */
 function formatTranscriptionResponse(transcriptionResponse, modelName) {
-  const transcription = transcriptionResponse.result;
+  // v5 returns the transcription data directly (v4 wrapped it in `.result`).
+  const transcription = transcriptionResponse;
   const result = transcription?.results?.channels?.[0]?.alternatives?.[0];
 
   if (!result) {
