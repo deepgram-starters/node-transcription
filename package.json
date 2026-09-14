@@ -41,7 +41,7 @@
     "express": "5.2.1",
     "jsonwebtoken": "9.0.2",
     "multer": "2.3.0",
-    "toml": "3.0.0"
+    "toml": "4.2.0"
   },
   "devDependencies": {
     "nodemon": "3.1.10"
