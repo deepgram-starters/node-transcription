@@ -136,8 +136,13 @@ const apiKey = loadApiKey();
 // SETUP - Initialize Express, Deepgram, and middleware
 // ============================================================================
 
-// Initialize Deepgram client
-const deepgram = new DeepgramClient({ apiKey });
+// Initialize Deepgram client. The override is for self-hosted deployments and
+// local compatibility tests; production continues to use the SDK default.
+const deepgramOptions = { apiKey };
+if (process.env.DEEPGRAM_API_BASE_URL) {
+  deepgramOptions.baseUrl = process.env.DEEPGRAM_API_BASE_URL;
+}
+const deepgram = new DeepgramClient(deepgramOptions);
 
 // Configure Multer for file uploads (stores files in memory)
 const storage = multer.memoryStorage();

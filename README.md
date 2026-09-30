@@ -54,6 +54,20 @@ cd frontend && corepack pnpm run dev -- --port 8080 --no-open
 
 Open [http://localhost:8080](http://localhost:8080) in your browser.
 
+## SDK Compatibility Test
+
+Run the deterministic SDK round-trip test with no Deepgram credentials or live
+API calls:
+
+```bash
+pnpm test:sdk-compat
+```
+
+The test starts a local fake Deepgram API and points the starter at it with
+`DEEPGRAM_API_BASE_URL`. This override is intended only for self-hosted
+deployments and local testing; leave it unset to use the production Deepgram
+API.
+
 ## License
 
 MIT - See [LICENSE](./LICENSE)
