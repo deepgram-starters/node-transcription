@@ -241,11 +241,14 @@ async function run() {
     );
     assertSdkRequest(fileRequest, "nova-3", TEST_AUDIO, "audio/wav");
   } finally {
-    if (child) {
-      await stopStarter(child);
-    }
-    if (fakeDeepgram) {
-      await closeServer(fakeDeepgram.server);
+    try {
+      if (child) {
+        await stopStarter(child);
+      }
+    } finally {
+      if (fakeDeepgram) {
+        await closeServer(fakeDeepgram.server);
+      }
     }
   }
 }
