@@ -17,6 +17,7 @@
   "scripts": {
     "start": "node --no-deprecation server.js",
     "start-backend": "nodemon --no-deprecation server.js",
+    "test": "pnpm test:sdk-compat",
     "test:sdk-compat": "node test/sdk-compat.test.js"
   },
   "repository": {

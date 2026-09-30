@@ -178,19 +178,24 @@ function assertSdkRequest(request, expectedModel, expectedBody, expectedContentT
 }
 
 async function run() {
-  const fakeDeepgram = await startFakeDeepgram();
-  const starterPort = await new Promise((resolve, reject) => {
-    const server = http.createServer();
-    server.once("error", reject);
-    server.listen(0, "127.0.0.1", () => {
-      const { port } = server.address();
-      server.close((error) => (error ? reject(error) : resolve(port)));
-    });
-  });
-  const starterUrl = `http://127.0.0.1:${starterPort}`;
-  const { child, output } = startStarter(starterPort, fakeDeepgram.url);
+  let fakeDeepgram;
+  let child;
 
   try {
+    fakeDeepgram = await startFakeDeepgram();
+    const starterPort = await new Promise((resolve, reject) => {
+      const server = http.createServer();
+      server.once("error", reject);
+      server.listen(0, "127.0.0.1", () => {
+        const { port } = server.address();
+        server.close((error) => (error ? reject(error) : resolve(port)));
+      });
+    });
+    const starterUrl = `http://127.0.0.1:${starterPort}`;
+    const starter = startStarter(starterPort, fakeDeepgram.url);
+    child = starter.child;
+    const { output } = starter;
+
     const sessionResponse = await waitForStarter(starterUrl, child, output);
     const { token } = await sessionResponse.json();
     assert.equal(typeof token, "string");
@@ -236,8 +241,12 @@ async function run() {
     );
     assertSdkRequest(fileRequest, "nova-3", TEST_AUDIO, "audio/wav");
   } finally {
-    await stopStarter(child);
-    await closeServer(fakeDeepgram.server);
+    if (child) {
+      await stopStarter(child);
+    }
+    if (fakeDeepgram) {
+      await closeServer(fakeDeepgram.server);
+    }
   }
 }
 
