@@ -103,7 +103,6 @@ function startStarter(port, deepgramBaseUrl) {
     SESSION_SECRET: TEST_SESSION_SECRET,
   };
   delete environment.DEEPGRAM_ACCESS_TOKEN;
-  delete environment.DEEPGRAM_API_BASE_URL;
 
   const child = spawn(process.execPath, ["--no-deprecation", "server.js"], {
     cwd: process.cwd(),
@@ -119,12 +118,19 @@ function startStarter(port, deepgramBaseUrl) {
 
 async function assertInvalidBaseUrlFails(value, expectedMessage) {
   const { child, output } = startStarter(0, value);
-  const [exitCode] = await Promise.race([
-    once(child, "close"),
-    delay(2_000).then(() => {
-      throw new Error("Starter did not reject an invalid DEEPGRAM_BASE_URL");
-    }),
-  ]);
+  const timeout = new AbortController();
+  let exitCode;
+  try {
+    [exitCode] = await Promise.race([
+      once(child, "close"),
+      delay(2_000, undefined, { signal: timeout.signal }).then(() => {
+        throw new Error("Starter did not reject an invalid DEEPGRAM_BASE_URL");
+      }),
+    ]);
+  } finally {
+    timeout.abort();
+    await stopStarter(child);
+  }
   const errorOutput = Buffer.concat(output).toString();
 
   assert.equal(exitCode, 1);
