@@ -13,7 +13,7 @@ importers:
     dependencies:
       '@deepgram/sdk':
         specifier: ^5.7.0
-        version: 5.7.0
+        version: 5.14.0
       cors:
         specifier: 2.8.5
         version: 2.8.5
@@ -39,8 +39,8 @@ importers:
 
 packages:
 
-  '@deepgram/sdk@5.7.0':
-    resolution: {integrity: sha512-A0uIaLukO+8JXUuT+iDE5ts8PCmdLCxDajawghFHLDEnFvA8dYYecCFxqFaTWgjJcJil0CtgIHKzm23E4RVqOA==}
+  '@deepgram/sdk@5.14.0':
+    resolution: {integrity: sha512-/nBcT0LQYMpLJ/TVoUp7hydNJN9iu1T7pxsjPm561SiIJ4baa46dgnrQEt8dEAZ+M+y5S0i8s4Fji4k62pCRbg==}
     engines: {node: '>=18.0.0'}
 
   accepts@2.0.0:
@@ -492,8 +492,8 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  ws@8.21.1:
-    resolution: {integrity: sha512-+0NTnW77fFN/DjQi6k/Sq/Yvk4Sgajw7urW8V+asjXnRgDs9gyGkdb7EzgfhA4goXsRIZKE28fzIXBHEzhuiWw==}
+  ws@8.22.0:
+    resolution: {integrity: sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -506,9 +506,9 @@ packages:
 
 snapshots:
 
-  '@deepgram/sdk@5.7.0':
+  '@deepgram/sdk@5.14.0':
     dependencies:
-      ws: 8.21.1
+      ws: 8.22.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -996,4 +996,4 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@8.21.1: {}
+  ws@8.22.0: {}
