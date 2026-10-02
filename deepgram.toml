@@ -46,5 +46,5 @@ message = "Frontend ejected successfully"
 
 # Testing
 [test]
-command = ["echo 'No tests configured'", "cd frontend && pnpm test"]
+command = ["corepack pnpm test", "cd frontend && pnpm test"]
 message = "Tests complete"
