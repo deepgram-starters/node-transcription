@@ -93,16 +93,17 @@ async function startFakeDeepgram() {
   return { requests, server, url: `http://127.0.0.1:${port}` };
 }
 
-function startStarter(port, deepgramApiBaseUrl) {
+function startStarter(port, deepgramBaseUrl) {
   const environment = {
     ...process.env,
-    DEEPGRAM_API_BASE_URL: deepgramApiBaseUrl,
+    DEEPGRAM_BASE_URL: deepgramBaseUrl,
     DEEPGRAM_API_KEY: TEST_API_KEY,
     HOST: "127.0.0.1",
     PORT: String(port),
     SESSION_SECRET: TEST_SESSION_SECRET,
   };
   delete environment.DEEPGRAM_ACCESS_TOKEN;
+  delete environment.DEEPGRAM_API_BASE_URL;
 
   const child = spawn(process.execPath, ["--no-deprecation", "server.js"], {
     cwd: process.cwd(),
@@ -114,6 +115,21 @@ function startStarter(port, deepgramApiBaseUrl) {
   child.stderr.on("data", (chunk) => output.push(chunk));
 
   return { child, output };
+}
+
+async function assertInvalidBaseUrlFails(value, expectedMessage) {
+  const { child, output } = startStarter(0, value);
+  const [exitCode] = await Promise.race([
+    once(child, "close"),
+    delay(2_000).then(() => {
+      throw new Error("Starter did not reject an invalid DEEPGRAM_BASE_URL");
+    }),
+  ]);
+  const errorOutput = Buffer.concat(output).toString();
+
+  assert.equal(exitCode, 1);
+  assert.match(errorOutput, expectedMessage);
+  assert.doesNotMatch(errorOutput, /\n\s+at /);
 }
 
 async function waitForStarter(url, child, output) {
@@ -240,6 +256,15 @@ async function run() {
       "application/json"
     );
     assertSdkRequest(fileRequest, "nova-3", TEST_AUDIO, "audio/wav");
+
+    await assertInvalidBaseUrlFails(
+      "not-a-url",
+      /DEEPGRAM_BASE_URL must be a valid HTTP\(S\) URL/
+    );
+    await assertInvalidBaseUrlFails(
+      "ftp://example.test",
+      /DEEPGRAM_BASE_URL must use HTTP or HTTPS/
+    );
   } finally {
     try {
       if (child) {

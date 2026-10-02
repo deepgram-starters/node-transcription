@@ -146,6 +146,7 @@ The frontend is a git submodule from `deepgram-starters/transcription-html`. To 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
 | `DEEPGRAM_API_KEY` | Yes | — | Deepgram API key |
+| `DEEPGRAM_BASE_URL` | No | — | Self-hosted or test-only Deepgram endpoint; leave unset for production |
 | `PORT` | No | `8081` | Backend server port |
 | `HOST` | No | `0.0.0.0` | Backend bind address |
 | `SESSION_SECRET` | No | — | JWT signing secret (production) |
@@ -164,6 +165,9 @@ chore(deps): update frontend submodule
 ## Testing
 
 ```bash
+# SDK round-trip against a local fake Deepgram API; no key needed
+corepack pnpm test
+
 # Run conformance tests (requires app to be running)
 make test
 

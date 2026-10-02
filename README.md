@@ -60,13 +60,13 @@ Run the deterministic SDK round-trip test with no Deepgram credentials or live
 API calls:
 
 ```bash
-pnpm test:sdk-compat
+corepack pnpm test:sdk-compat
 ```
 
 The test starts a local fake Deepgram API and points the starter at it with
-`DEEPGRAM_API_BASE_URL`. This value replaces the destination of every
-Deepgram SDK request, including the `Authorization` credential derived from
-`DEEPGRAM_API_KEY`. Set it only for a trusted self-hosted Deepgram-compatible
+`DEEPGRAM_BASE_URL`. Every Deepgram SDK request, carrying the `Authorization`
+header built from `DEEPGRAM_API_KEY`, goes to this host instead of
+`api.deepgram.com`. Set it only for a trusted self-hosted Deepgram-compatible
 endpoint or local test server; leave it unset to use the production Deepgram
 API. The override accepts only `http:` and `https:` URLs, but it does not
 restrict the host, so do not point it at an untrusted endpoint.

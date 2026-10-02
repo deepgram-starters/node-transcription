@@ -139,20 +139,22 @@ const apiKey = loadApiKey();
 // Initialize Deepgram client. The override is for self-hosted deployments and
 // local compatibility tests; production continues to use the SDK default.
 const deepgramOptions = { apiKey };
-const deepgramApiBaseUrl = process.env.DEEPGRAM_API_BASE_URL;
-if (deepgramApiBaseUrl) {
+const deepgramBaseUrl = process.env.DEEPGRAM_BASE_URL;
+if (deepgramBaseUrl) {
   let parsedBaseUrl;
   try {
-    parsedBaseUrl = new URL(deepgramApiBaseUrl);
+    parsedBaseUrl = new URL(deepgramBaseUrl);
   } catch {
-    throw new Error("DEEPGRAM_API_BASE_URL must be a valid HTTP(S) URL");
+    console.error("DEEPGRAM_BASE_URL must be a valid HTTP(S) URL");
+    process.exit(1);
   }
 
   if (!["http:", "https:"].includes(parsedBaseUrl.protocol)) {
-    throw new Error("DEEPGRAM_API_BASE_URL must use HTTP or HTTPS");
+    console.error("DEEPGRAM_BASE_URL must use HTTP or HTTPS");
+    process.exit(1);
   }
 
-  deepgramOptions.baseUrl = deepgramApiBaseUrl;
+  deepgramOptions.baseUrl = deepgramBaseUrl;
 }
 const deepgram = new DeepgramClient(deepgramOptions);
 
