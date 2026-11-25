@@ -30,8 +30,8 @@ importers:
         specifier: 2.5.0
         version: 2.5.0
       toml:
-        specifier: 4.2.0
-        version: 4.2.0
+        specifier: 5.0.1
+        version: 5.0.1
     devDependencies:
       nodemon:
         specifier: 3.1.10
@@ -462,8 +462,8 @@ packages:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
 
-  toml@4.2.0:
-    resolution: {integrity: sha512-TvAJjbHZlYmI323+srtqHQFyJsoWy6mI09ppkuj9+iRsqsVKG9fvTcOP7FHF2UCb0QSYtjEavffrKzdd0XgClg==}
+  toml@5.0.1:
+    resolution: {integrity: sha512-EqYNA/YvUNndrA2B3O2ojzLQoTQrBxeZ9UIjQwk8t10oe6n7dwclBwd9IdZQTOKwe6vWX+AXtl6IntXRbepdxQ==}
     engines: {node: '>=20'}
 
   touch@3.1.1:
@@ -973,7 +973,7 @@ snapshots:
 
   toidentifier@1.0.1: {}
 
-  toml@4.2.0: {}
+  toml@5.0.1: {}
 
   touch@3.1.1: {}
 
